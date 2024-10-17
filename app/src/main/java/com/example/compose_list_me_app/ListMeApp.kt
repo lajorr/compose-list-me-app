@@ -1,6 +1,7 @@
 package com.example.compose_list_me_app
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -20,8 +21,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.example.compose_list_me_app.common.getNavItems
 import com.example.compose_list_me_app.posts.presentations.PostListScreen
+import com.example.compose_list_me_app.users.presentation.UserDetailScreen
 import com.example.compose_list_me_app.users.presentation.UserListScreen
 import kotlinx.serialization.Serializable
 
@@ -38,7 +41,13 @@ fun NavGraph(modifier: Modifier = Modifier, navController: NavHostController) {
     NavHost(navController = navController, startDestination = NavPage) {
 
         composable<NavPage> {
-            NavPage()
+            NavPage(onUserTap = {
+                navController.navigate(UserDetailScreen)
+            })
+        }
+        composable<UserDetailScreen> {
+//            val args = it.toRoute<UserDetailScreen>()
+            UserDetailScreen()
         }
 
     }
@@ -49,38 +58,35 @@ fun NavGraph(modifier: Modifier = Modifier, navController: NavHostController) {
 object NavPage
 
 @Composable
-fun NavPage(modifier: Modifier = Modifier) {
+fun NavPage(modifier: Modifier = Modifier, onUserTap: () -> Unit) {
 
     val context = LocalContext.current
     var selectedIndex by remember {
         mutableIntStateOf(0)
     }
 
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+    Scaffold(modifier = Modifier
+        .fillMaxSize()
+        .background(MaterialTheme.colorScheme.background),
         bottomBar = {
             NavigationBar {
                 getNavItems(context).forEachIndexed { index, item ->
-                    NavigationBarItem(
-                        selected = selectedIndex == index,
+                    NavigationBarItem(selected = selectedIndex == index,
                         label = { Text(item.label) },
                         icon = { Icon(item.icon, contentDescription = "icon") },
-                        onClick = { selectedIndex = index }
-                    )
+                        onClick = { selectedIndex = index })
                 }
             }
         }) {
-        PageList(modifier = Modifier.padding(it), index = selectedIndex)
-    }
-}
+        when (selectedIndex) {
+            0 -> UserListScreen(
+                modifier = modifier.padding(
+                    bottom = it.calculateBottomPadding()
+                ), onUserTap = onUserTap
 
-@Composable
-fun PageList(modifier: Modifier = Modifier, index: Int) {
+            )
 
-    when (index) {
-        0 -> UserListScreen(modifier)
-        1 -> PostListScreen(modifier)
+            1 -> PostListScreen(modifier)
+        }
     }
 }

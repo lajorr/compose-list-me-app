@@ -69,4 +69,9 @@ dependencies {
 
     implementation(libs.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.retrofit)
+    implementation(libs.lifecycle.viewModel)
+    implementation(libs.gson)
+    implementation(libs.coil.compose)
+     
 }

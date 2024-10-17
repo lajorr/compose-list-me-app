@@ -2,6 +2,7 @@ package com.example.compose_list_me_app.users.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,15 +16,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -31,25 +35,36 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import com.example.compose_list_me_app.R
+import com.example.compose_list_me_app.common.IconText
 import com.example.compose_list_me_app.ui.theme.BackgroundColor
 import com.example.compose_list_me_app.ui.theme.ContainerColor2
 import com.example.compose_list_me_app.ui.theme.PrimaryColor
 import com.example.compose_list_me_app.ui.theme.SecondaryColor
-import kotlinx.serialization.Serializable
+import com.example.compose_list_me_app.users.domain.models.User
 
-@Serializable
-object UserListScreen
 
 @Composable
-fun UserListScreen(modifier: Modifier = Modifier) {
+fun UserListScreen(
+    modifier: Modifier = Modifier,
+    viewModel: UsersViewModel = viewModel(factory = UsersViewModel.Factory),
+    onUserTap: () -> Unit
+) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
-            .background(BackgroundColor)
+            .background(BackgroundColor),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         Box {
             Box(
@@ -69,15 +84,16 @@ fun UserListScreen(modifier: Modifier = Modifier) {
 
             }
 
-            OutlinedTextField(modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-                .align(Alignment.BottomCenter)
-                .offset(y = 25.dp)
-                .shadow(
-                    elevation = 8.dp,
-                    RoundedCornerShape(50),
-                ),
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                    .align(Alignment.BottomCenter)
+                    .offset(y = 25.dp)
+                    .shadow(
+                        elevation = 8.dp,
+                        RoundedCornerShape(50),
+                    ),
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedContainerColor = ContainerColor2,
                     unfocusedBorderColor = Color.Transparent,
@@ -87,66 +103,99 @@ fun UserListScreen(modifier: Modifier = Modifier) {
                 shape = RoundedCornerShape(50.dp),
                 leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = "search") },
                 placeholder = { Text(text = "Search users") },
-                value = "",
-                onValueChange = {})
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                maxLines = 1,
+
+                value = viewModel.searchText,
+                onValueChange = viewModel::updateSearchText
+            )
         }
         Spacer(modifier = Modifier.height(30.dp))
-        LazyColumn(
+        Column(
             modifier = Modifier
-                .weight(1f)
-                .padding(16.dp)
+                .weight(1F)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            items(1) {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(Color.White)
-                        .padding(12.dp)
-                ) {
-                    Row {
-                        Box(
-                            modifier = Modifier
-                                .size(50.dp)
-                                .clip(RoundedCornerShape(25.dp))
-                                .background(Color.LightGray)
-                                .border(
-                                    width = 2.dp,
-                                    color = SecondaryColor,
-                                    shape = RoundedCornerShape(50)
-                                )
 
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Column {
-                            Text(
-                                "User FullName",
-                                fontSize = 16.sp,
-                                color = PrimaryColor,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                            IconText(icon = Icons.Filled.LocationOn, text = "572 Statan NY, 12483")
-                            Spacer(modifier = Modifier.height(4.dp))
-                            IconText(icon = Icons.Filled.Person, text = "@lajorr")
-                        }
+            when (val uiState = viewModel.userDataState) {
+                is UserUiState.Error -> ErrorUi(message = uiState.message)
+                UserUiState.Loading -> CircularProgressIndicator()
+                is UserUiState.Success -> SuccessUi(
+                    userList = uiState.usersList, onTap = onUserTap
+                )
+            }
+        }
 
+    }
+}
+
+@Composable
+fun SuccessUi(modifier: Modifier = Modifier, userList: List<User>, onTap: () -> Unit) {
+    LazyColumn(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(userList) { user ->
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color.White)
+                    .clickable {
+                        onTap()
                     }
+                    .padding(12.dp)
+
+            ) {
+                Row {
+                    Box(
+                        modifier = Modifier
+                            .size(50.dp)
+                            .clip(RoundedCornerShape(25.dp))
+                            .border(
+                                width = 2.dp, color = SecondaryColor, shape = RoundedCornerShape(50)
+                            )
+
+                    ) {
+                        AsyncImage(
+                            modifier = Modifier.size(50.dp),
+                            model = user.imageUrl,
+                            contentDescription = "user",
+                            error = painterResource(R.drawable.ic_launcher_background),
+                            contentScale = ContentScale.FillHeight,
+                            placeholder = painterResource(R.drawable.ic_launcher_foreground)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Column {
+                        Text(
+                            user.name,
+                            fontSize = 16.sp,
+                            color = PrimaryColor,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        IconText(icon = Icons.Filled.LocationOn, text = user.address.street)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        IconText(
+                            icon = Icons.Filled.Person,
+                            text = "@${user.username}",
+                            fontStyle = FontStyle.Italic
+                        )
+                    }
+
                 }
             }
         }
     }
-}
 
+}
 
 @Composable
-fun IconText(modifier: Modifier = Modifier, icon: ImageVector, text: String) {
-    Row {
-        Icon(
-            icon, contentDescription = "location", tint = SecondaryColor
-        )
-        Spacer(modifier = Modifier.width(4.dp))
-        Text(
-            text = text, color = PrimaryColor, fontWeight = FontWeight(300)
-        )
-    }
+fun ErrorUi(message: String) {
+    Text(text = message, color = Color.Red, fontSize = 16.sp)
 }
+
