@@ -1,6 +1,7 @@
 package com.example.compose_list_me_app.users.presentation
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,29 +29,39 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.example.compose_list_me_app.R
 import com.example.compose_list_me_app.ui.theme.BackgroundColor
 import com.example.compose_list_me_app.ui.theme.PrimaryColor
+import com.example.compose_list_me_app.ui.theme.SecondaryColor
 import kotlinx.serialization.Serializable
+import kotlin.math.round
 
 @Serializable
 object UserDetailScreen
 
 @Composable
-fun UserDetailScreen(modifier: Modifier = Modifier) {
+fun UserDetailScreen(
+    modifier: Modifier = Modifier, userViewModel: UsersViewModel
+) {
+
     val scrollState = rememberScrollState()
+    val userData = userViewModel.userDetailState.user
     Scaffold(
         modifier = modifier
             .fillMaxSize()
             .background(BackgroundColor)
     ) {
-        Box(
+        if (userData != null) Box(
             modifier = Modifier
                 .padding(bottom = it.calculateBottomPadding())
                 .background(BackgroundColor)
         ) {
+
             Box(
                 modifier = Modifier
                     .height(200.dp)
@@ -79,35 +90,45 @@ fun UserDetailScreen(modifier: Modifier = Modifier) {
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Spacer(modifier = Modifier.height(40.dp))
-                            Text("Full Name", fontSize = 20.sp)
+                            Text(userData.name, fontSize = 20.sp)
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text("asd@sad.com")
+                            Text(userData.email)
                             Spacer(modifier = Modifier.height(24.dp))
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceEvenly
                             ) {
-                                UserInfoTile(title = "Street", value = "asd")
-                                UserInfoTile(title = "City", value = "asd")
-                                UserInfoTile(title = "Zipcode", value = "asd")
+                                UserInfoTile(
+                                    title = stringResource(R.string.street),
+                                    value = userData.address.street
+                                )
+                                UserInfoTile(
+                                    title = stringResource(R.string.city),
+                                    value = userData.address.city
+                                )
+                                UserInfoTile(
+                                    title = stringResource(R.string.zip_code),
+                                    value = userData.address.zipcode
+                                )
                             }
                         }
                     }
+                    // Image
                     Surface(
                         modifier = Modifier
                             .size(80.dp)
                             .align(alignment = Alignment.TopCenter)
+                            .border(3.dp, SecondaryColor, RoundedCornerShape(50))
                             .shadow(8.dp, RoundedCornerShape(50)), shape = RoundedCornerShape(50)
 
                     ) {
-
+                        AsyncImage(model = userData.imageUrl, contentDescription = null)
                     }
 
                 }
                 Spacer(modifier = Modifier.height(50.dp))
                 Column(
                     modifier = Modifier
-//                        .weight(1f)
                         .fillMaxWidth()
                         .background(Color.White)
                         .padding(16.dp)
@@ -132,16 +153,17 @@ fun UserDetailScreen(modifier: Modifier = Modifier) {
             }
 
         }
+        else Text("Error")
     }
 
 }
 
 @Composable
 fun UserInfoTile(title: String, value: String) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(100.dp)) {
 
         Text(title, fontWeight = FontWeight.Bold)
-        Text(value)
+        Text(value, textAlign = TextAlign.Center)
     }
 }
 

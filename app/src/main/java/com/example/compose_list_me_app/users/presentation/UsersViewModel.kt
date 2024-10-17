@@ -20,28 +20,32 @@ sealed interface UserUiState {
     data class Error(val message: String) : UserUiState
 }
 
+data class UserDetailsState(val user: User?)
+
+
 class UsersViewModel(private val userRepository: UserRepository) : ViewModel() {
 
     var searchText by mutableStateOf("")
         private set
 
-    var userDataState: UserUiState by mutableStateOf(UserUiState.Loading)
-
-    init {
-        getUsers()
-    }
+    var userListState: UserUiState by mutableStateOf(UserUiState.Loading)
 
     private lateinit var _userList: List<User>
 
-    private fun getUsers() {
-        userDataState = UserUiState.Loading
+    init {
+        getUsersList()
+    }
+
+
+    private fun getUsersList() {
+        userListState = UserUiState.Loading
         viewModelScope.launch {
             try {
                 val data = userRepository.fetchAllUsers()
                 _userList = data
-                userDataState = UserUiState.Success(data)
+                userListState = UserUiState.Success(data)
             } catch (e: Exception) {
-                userDataState = UserUiState.Error(message = "Failed to fetch data")
+                userListState = UserUiState.Error(message = "Failed to fetch data")
             }
         }
     }
@@ -53,18 +57,29 @@ class UsersViewModel(private val userRepository: UserRepository) : ViewModel() {
     }
 
     private fun searchUsers() {
-        userDataState = UserUiState.Loading
+        userListState = UserUiState.Loading
         try {
 
             val filteredUsers = _userList.filter { user ->
                 user.name.lowercase().contains(searchText)
             }
-            userDataState = UserUiState.Success(filteredUsers)
+            userListState = UserUiState.Success(filteredUsers)
 
         } catch (e: Exception) {
-            userDataState = UserUiState.Error(message = "No Result")
+            userListState = UserUiState.Error(message = "No Result")
         }
 
+    }
+
+    var userDetailState: UserDetailsState by mutableStateOf(UserDetailsState(user = null))
+        private set
+
+
+    fun getUser(id: Int) {
+        val user = _userList.first { user ->
+            user.id == id
+        }
+        userDetailState = UserDetailsState(user = user)
     }
 
 

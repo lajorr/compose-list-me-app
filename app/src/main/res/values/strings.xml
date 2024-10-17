@@ -3,4 +3,7 @@
     <string name="users">Users</string>
     <string name="posts">Posts</string>
     <string name="albums">Albums</string>
+    <string name="street">Street</string>
+    <string name="city">City</string>
+    <string name="zip_code">Zip code</string>
 </resources>

@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
@@ -51,7 +50,6 @@ import com.example.compose_list_me_app.ui.theme.ContainerColor2
 import com.example.compose_list_me_app.ui.theme.PrimaryColor
 import com.example.compose_list_me_app.ui.theme.SecondaryColor
 import com.example.compose_list_me_app.users.domain.models.User
-
 
 @Composable
 fun UserListScreen(
@@ -119,11 +117,15 @@ fun UserListScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            when (val uiState = viewModel.userDataState) {
+            when (val uiState = viewModel.userListState) {
                 is UserUiState.Error -> ErrorUi(message = uiState.message)
                 UserUiState.Loading -> CircularProgressIndicator()
                 is UserUiState.Success -> SuccessUi(
-                    userList = uiState.usersList, onTap = onUserTap
+                    userList = uiState.usersList, onTap = {
+
+                        viewModel.getUser(it)
+                        onUserTap()
+                    }
                 )
             }
         }
@@ -132,7 +134,7 @@ fun UserListScreen(
 }
 
 @Composable
-fun SuccessUi(modifier: Modifier = Modifier, userList: List<User>, onTap: () -> Unit) {
+fun SuccessUi(modifier: Modifier = Modifier, userList: List<User>, onTap: (Int) -> Unit) {
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
@@ -146,7 +148,8 @@ fun SuccessUi(modifier: Modifier = Modifier, userList: List<User>, onTap: () -> 
                     .clip(RoundedCornerShape(16.dp))
                     .background(Color.White)
                     .clickable {
-                        onTap()
+
+                        onTap(user.id)
                     }
                     .padding(12.dp)
 
