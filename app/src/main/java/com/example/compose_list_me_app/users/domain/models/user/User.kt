@@ -1,4 +1,4 @@
-package com.example.compose_list_me_app.users.domain.models
+package com.example.compose_list_me_app.users.domain.models.user
 
 
 data class User(

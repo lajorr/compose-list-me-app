@@ -9,8 +9,11 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.compose_list_me_app.ListMeApplication
-import com.example.compose_list_me_app.users.domain.models.User
+import com.example.compose_list_me_app.users.domain.models.album.Album
+import com.example.compose_list_me_app.users.domain.models.photo.Photo
+import com.example.compose_list_me_app.users.domain.models.user.User
 import com.example.compose_list_me_app.users.domain.repositories.UserRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
@@ -18,6 +21,18 @@ sealed interface UserUiState {
     data class Success(val usersList: List<User>) : UserUiState
     data object Loading : UserUiState
     data class Error(val message: String) : UserUiState
+}
+
+sealed interface AlbumUiState {
+    data class Success(val albumList: List<Album>) : AlbumUiState
+    data object Loading : AlbumUiState
+    data class Error(val message: String) : AlbumUiState
+}
+
+sealed interface PhotoUiState {
+    data class Success(val albumList: List<Photo>) : PhotoUiState
+    data object Loading : PhotoUiState
+    data class Error(val message: String) : PhotoUiState
 }
 
 data class UserDetailsState(val user: User?)
@@ -29,6 +44,8 @@ class UsersViewModel(private val userRepository: UserRepository) : ViewModel() {
         private set
 
     var userListState: UserUiState by mutableStateOf(UserUiState.Loading)
+    var albumListState: AlbumUiState by mutableStateOf(AlbumUiState.Loading)
+    var photoListState: PhotoUiState by mutableStateOf(PhotoUiState.Loading)
 
     private lateinit var _userList: List<User>
 
@@ -80,6 +97,32 @@ class UsersViewModel(private val userRepository: UserRepository) : ViewModel() {
             user.id == id
         }
         userDetailState = UserDetailsState(user = user)
+    }
+
+    fun getAllUserAlbums(userId: Int) {
+        albumListState = AlbumUiState.Loading
+        try {
+
+            viewModelScope.launch {
+                val result = userRepository.fetchUserAlbums(userId)
+                albumListState = AlbumUiState.Success(albumList = result)
+
+            }
+        } catch (e: Exception) {
+            albumListState = AlbumUiState.Error(message = "Failed to fetch albums")
+        }
+    }
+
+    fun getAlbumPhotos(albumId: Int) {
+        photoListState = PhotoUiState.Loading
+        try {
+            viewModelScope.launch {
+                val result = userRepository.fetchAlbumPhotos(albumId)
+                photoListState = PhotoUiState.Success(albumList = result)
+            }
+        } catch (e: Exception) {
+            photoListState = PhotoUiState.Error("Failed to fetch photos")
+        }
     }
 
 

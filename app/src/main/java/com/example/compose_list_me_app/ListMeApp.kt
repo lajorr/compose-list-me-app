@@ -1,7 +1,6 @@
 package com.example.compose_list_me_app
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -25,6 +24,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.compose_list_me_app.common.getNavItems
 import com.example.compose_list_me_app.posts.presentations.PostListScreen
+import com.example.compose_list_me_app.users.presentation.AlbumScreen
+import com.example.compose_list_me_app.users.presentation.AlbumScreenParams
 import com.example.compose_list_me_app.users.presentation.UserDetailScreen
 import com.example.compose_list_me_app.users.presentation.UserListScreen
 import com.example.compose_list_me_app.users.presentation.UsersViewModel
@@ -46,16 +47,21 @@ fun NavGraph(modifier: Modifier = Modifier, navController: NavHostController) {
         composable<NavPage> {
             NavPage(
                 onUserTap = {
-                    navController.navigate(UserDetailScreen)
-                },
-                usersVm = vm
+                    navController.navigate(UserDetailScreen(it))
+                }, usersVm = vm
             )
         }
         composable<UserDetailScreen> {
-//            val args = it.toRoute<UserDetailScreen>()
-            UserDetailScreen(userViewModel = vm)
+            val args = it.toRoute<UserDetailScreen>()
+            UserDetailScreen(userViewModel = vm,
+                navigateBack = { navController.popBackStack() },
+                userId = args.id,
+                onAlbumTap = { albumId -> navController.navigate(AlbumScreenParams(albumId)) })
         }
-
+        composable<AlbumScreenParams> {
+            val args = it.toRoute<AlbumScreenParams>()
+            AlbumScreen(albumId = args.albumId, viewModel = vm)
+        }
     }
 }
 
@@ -64,7 +70,7 @@ fun NavGraph(modifier: Modifier = Modifier, navController: NavHostController) {
 object NavPage
 
 @Composable
-fun NavPage(modifier: Modifier = Modifier, onUserTap: () -> Unit, usersVm: UsersViewModel) {
+fun NavPage(modifier: Modifier = Modifier, onUserTap: (Int) -> Unit, usersVm: UsersViewModel) {
 
     val context = LocalContext.current
     var selectedIndex by remember {
@@ -88,8 +94,7 @@ fun NavPage(modifier: Modifier = Modifier, onUserTap: () -> Unit, usersVm: Users
             0 -> UserListScreen(
                 modifier = modifier.padding(
                     bottom = it.calculateBottomPadding()
-                ), onUserTap = onUserTap,
-                viewModel = usersVm
+                ), onUserTap = onUserTap, viewModel = usersVm
 
             )
 

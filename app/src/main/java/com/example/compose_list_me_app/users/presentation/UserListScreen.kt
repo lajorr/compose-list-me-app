@@ -49,13 +49,13 @@ import com.example.compose_list_me_app.ui.theme.BackgroundColor
 import com.example.compose_list_me_app.ui.theme.ContainerColor2
 import com.example.compose_list_me_app.ui.theme.PrimaryColor
 import com.example.compose_list_me_app.ui.theme.SecondaryColor
-import com.example.compose_list_me_app.users.domain.models.User
+import com.example.compose_list_me_app.users.domain.models.user.User
 
 @Composable
 fun UserListScreen(
     modifier: Modifier = Modifier,
     viewModel: UsersViewModel = viewModel(factory = UsersViewModel.Factory),
-    onUserTap: () -> Unit
+    onUserTap: (Int) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -121,11 +121,7 @@ fun UserListScreen(
                 is UserUiState.Error -> ErrorUi(message = uiState.message)
                 UserUiState.Loading -> CircularProgressIndicator()
                 is UserUiState.Success -> SuccessUi(
-                    userList = uiState.usersList, onTap = {
-
-                        viewModel.getUser(it)
-                        onUserTap()
-                    }
+                    userList = uiState.usersList, onTap = onUserTap
                 )
             }
         }
