@@ -60,7 +60,11 @@ fun NavGraph(modifier: Modifier = Modifier, navController: NavHostController) {
         }
         composable<AlbumScreenParams> {
             val args = it.toRoute<AlbumScreenParams>()
-            AlbumScreen(albumId = args.albumId, viewModel = vm)
+            AlbumScreen(albumId = args.albumId,
+                viewModel = vm,
+                navigateBack = {
+                    navController.popBackStack()
+                })
         }
     }
 }
