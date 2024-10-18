@@ -1,13 +1,13 @@
 package com.example.compose_list_me_app.users.data.respositories
 
 import android.util.Log
-import com.example.compose_list_me_app.users.data.datasource.RemoteDataSource
+import com.example.compose_list_me_app.users.data.datasource.UserRemoteDataSource
 import com.example.compose_list_me_app.users.domain.models.album.Album
 import com.example.compose_list_me_app.users.domain.models.photo.Photo
 import com.example.compose_list_me_app.users.domain.models.user.User
 import com.example.compose_list_me_app.users.domain.repositories.UserRepository
 
-class UserRepositoryImpl(private val remoteDataSource: RemoteDataSource) : UserRepository {
+class UserRepositoryImpl(private val remoteDataSource: UserRemoteDataSource) : UserRepository {
     override suspend fun fetchAllUsers(): List<User> {
         try {
             var result = listOf<User>()
