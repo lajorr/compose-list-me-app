@@ -25,7 +25,11 @@ class PostViewModel(private val postRepository: PostRepository) : ViewModel() {
     var postUiState: PostUiState by mutableStateOf(PostUiState.Loading)
         private set
 
-    fun getAllPosts() {
+    init {
+        getAllPosts()
+    }
+
+    private fun getAllPosts() {
         PostUiState.Loading
         try {
             viewModelScope.launch {

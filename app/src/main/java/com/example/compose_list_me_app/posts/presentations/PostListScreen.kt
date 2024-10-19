@@ -6,15 +6,20 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,8 +31,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.compose_list_me_app.R
+import com.example.compose_list_me_app.common.ErrorText
 import com.example.compose_list_me_app.common.MyAppBar
+import com.example.compose_list_me_app.posts.domain.models.Post
 import com.example.compose_list_me_app.ui.theme.BackgroundColor
 import com.example.compose_list_me_app.ui.theme.PrimaryColor
 import com.example.compose_list_me_app.ui.theme.SecondaryColor
@@ -35,33 +43,48 @@ import java.util.Locale
 
 
 @Composable
-fun PostListScreen(modifier: Modifier = Modifier) {
+fun PostListScreen(
+    modifier: Modifier = Modifier,
+    postViewModel: PostViewModel = viewModel(factory = PostViewModel.Factory)
+) {
+
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(BackgroundColor),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .background(BackgroundColor)
+
     ) {
         MyAppBar(title = stringResource(R.string.posts), canPop = false)
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .padding(16.dp)
                 .weight(1f),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            items(2) {
-                PostTile()
+            when (val uiState = postViewModel.postUiState) {
+                is PostUiState.Error -> ErrorText(uiState.message)
+                PostUiState.Loading -> CircularProgressIndicator()
+                is PostUiState.Success -> LazyColumn(
+                    modifier = Modifier.fillMaxHeight(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    itemsIndexed(uiState.allPosts) { index, post ->
+                        PostTile(index = index, post = post)
+                    }
+                }
             }
+
+
         }
     }
 }
 
 @Composable
-fun PostTile(modifier: Modifier = Modifier, ) {
+fun PostTile(modifier: Modifier = Modifier, post: Post, index: Int) {
     Box(modifier = modifier
         .fillMaxWidth()
-        .height(100.dp)
+//        .height(110.dp)
         .clip(RoundedCornerShape(16.dp))
         .background(Color.White)
         .clickable {
@@ -72,8 +95,7 @@ fun PostTile(modifier: Modifier = Modifier, ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(),
-//                .height(intrinsicSize = IntrinsicSize.Min),
+                .height(intrinsicSize = IntrinsicSize.Min),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
@@ -87,19 +109,28 @@ fun PostTile(modifier: Modifier = Modifier, ) {
 
             ) {
                 Text(
-                    text = "1", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold
+                    text = (index + 1).toString(),
+                    color = Color.White,
+                    fontSize = 20.sp,
                 )
             }
             Column(modifier = Modifier.fillMaxHeight()) {
                 Text(
-                    text = "title".replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
+                    text = post.title.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp,
                     overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
+                    maxLines = 1,
+                    color = PrimaryColor
                 )
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "body", fontSize = 16.sp, overflow = TextOverflow.Ellipsis, maxLines = 2
+                    text = post.body,
+                    fontSize = 16.sp,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 2,
+                    color = PrimaryColor,
+                    fontWeight = FontWeight(300)
                 )
             }
         }
