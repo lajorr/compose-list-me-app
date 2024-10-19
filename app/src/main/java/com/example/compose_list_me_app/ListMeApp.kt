@@ -23,9 +23,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.compose_list_me_app.common.getNavItems
+import com.example.compose_list_me_app.posts.domain.models.Post
 import com.example.compose_list_me_app.posts.presentations.CommentsScreen
 import com.example.compose_list_me_app.posts.presentations.CommentsScreenObject
 import com.example.compose_list_me_app.posts.presentations.PostListScreen
+import com.example.compose_list_me_app.posts.presentations.PostViewModel
 import com.example.compose_list_me_app.users.presentation.AlbumScreen
 import com.example.compose_list_me_app.users.presentation.AlbumScreenParams
 import com.example.compose_list_me_app.users.presentation.UserDetailScreen
@@ -43,31 +45,40 @@ fun ListMeApp(modifier: Modifier = Modifier) {
 
 @Composable
 fun NavGraph(modifier: Modifier = Modifier, navController: NavHostController) {
-    val vm: UsersViewModel = viewModel(factory = UsersViewModel.Factory)
+    val usersVm: UsersViewModel = viewModel(factory = UsersViewModel.Factory)
+    val postVm: PostViewModel = viewModel(factory = PostViewModel.Factory)
     NavHost(navController = navController, startDestination = NavPage) {
 
         composable<NavPage> {
             NavPage(onUserTap = {
                 navController.navigate(UserDetailScreen(it))
-            }, onPostTap = { navController.navigate(CommentsScreenObject(it)) }, usersVm = vm
+            }, onPostTap = { navController.navigate(CommentsScreenObject(it)) },
+                usersVm = usersVm,
+                postVm = postVm
             )
         }
         composable<UserDetailScreen> {
             val args = it.toRoute<UserDetailScreen>()
-            UserDetailScreen(userViewModel = vm,
+            UserDetailScreen(userViewModel = usersVm,
                 navigateBack = { navController.popBackStack() },
                 userId = args.id,
                 onAlbumTap = { albumId -> navController.navigate(AlbumScreenParams(albumId)) })
         }
         composable<AlbumScreenParams> {
             val args = it.toRoute<AlbumScreenParams>()
-            AlbumScreen(albumId = args.albumId, viewModel = vm, navigateBack = {
+            AlbumScreen(albumId = args.albumId, viewModel = usersVm, navigateBack = {
                 navController.popBackStack()
             })
         }
         composable<CommentsScreenObject> {
             val args = it.toRoute<CommentsScreenObject>()
-            CommentsScreen(postId = args.postId)
+            CommentsScreen(
+                postId = args.postId,
+                onPop = {
+                    navController.popBackStack()
+                },
+                postViewModel = postVm
+            )
         }
     }
 }
@@ -81,7 +92,8 @@ fun NavPage(
     modifier: Modifier = Modifier,
     onUserTap: (Int) -> Unit,
     onPostTap: (Int) -> Unit,
-    usersVm: UsersViewModel
+    usersVm: UsersViewModel,
+    postVm: PostViewModel
 ) {
 
     val context = LocalContext.current
@@ -106,14 +118,17 @@ fun NavPage(
             0 -> UserListScreen(
                 modifier = modifier.padding(
                     bottom = it.calculateBottomPadding()
-                ), onUserTap = onUserTap, viewModel = usersVm
+                ),
+                onUserTap = onUserTap,
+                viewModel = usersVm
 
             )
 
             1 -> PostListScreen(
                 modifier = modifier.padding(
                     bottom = it.calculateBottomPadding()
-                ), navigateCommentsScreen = onPostTap
+                ), navigateCommentsScreen = onPostTap,
+                viewModel = postVm
             )
         }
     }

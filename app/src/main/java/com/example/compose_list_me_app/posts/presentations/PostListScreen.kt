@@ -30,7 +30,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.compose_list_me_app.R
 import com.example.compose_list_me_app.common.ErrorText
 import com.example.compose_list_me_app.common.MyAppBar
@@ -44,9 +43,7 @@ import java.util.Locale
 @Composable
 fun PostListScreen(
     modifier: Modifier = Modifier,
-    postViewModel: PostViewModel = viewModel(
-        factory = PostViewModel.Factory
-    ),
+    viewModel: PostViewModel,
     navigateCommentsScreen: (Int) -> Unit,
 
     ) {
@@ -66,7 +63,7 @@ fun PostListScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            when (val uiState = postViewModel.postUiState) {
+            when (val uiState = viewModel.postUiState) {
                 is PostUiState.Error -> ErrorText(uiState.message)
                 PostUiState.Loading -> CircularProgressIndicator()
                 is PostUiState.Success -> LazyColumn(

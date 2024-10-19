@@ -57,7 +57,7 @@ import com.example.compose_list_me_app.users.domain.models.user.User
 @Composable
 fun UserListScreen(
     modifier: Modifier = Modifier,
-    viewModel: UsersViewModel = viewModel(factory = UsersViewModel.Factory),
+    viewModel: UsersViewModel,
     onUserTap: (Int) -> Unit
 ) {
     Column(
@@ -140,24 +140,22 @@ fun SuccessUi(modifier: Modifier = Modifier, userList: List<User>, onTap: (Int) 
 
             ) {
                 Row {
-                    Box(
+                    AsyncImage(
                         modifier = Modifier
                             .size(50.dp)
                             .clip(RoundedCornerShape(25.dp))
                             .border(
-                                width = 2.dp, color = SecondaryColor, shape = RoundedCornerShape(50)
-                            )
+                                width = 2.dp,
+                                color = SecondaryColor,
+                                shape = RoundedCornerShape(50)
+                            ),
+                        model = user.imageUrl,
+                        contentDescription = "user",
+                        error = painterResource(R.drawable.ic_launcher_background),
+                        contentScale = ContentScale.FillHeight,
+                        placeholder = painterResource(R.drawable.ic_launcher_foreground)
+                    )
 
-                    ) {
-                        AsyncImage(
-                            modifier = Modifier.size(50.dp),
-                            model = user.imageUrl,
-                            contentDescription = "user",
-                            error = painterResource(R.drawable.ic_launcher_background),
-                            contentScale = ContentScale.FillHeight,
-                            placeholder = painterResource(R.drawable.ic_launcher_foreground)
-                        )
-                    }
                     Spacer(modifier = Modifier.width(8.dp))
                     Column {
                         Text(
