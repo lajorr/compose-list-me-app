@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.compose_list_me_app.R
+import com.example.compose_list_me_app.common.ErrorText
 import com.example.compose_list_me_app.common.MyAppBar
 import com.example.compose_list_me_app.common.IconText
 import com.example.compose_list_me_app.ui.theme.BackgroundColor
@@ -107,7 +108,7 @@ fun UserListScreen(
         ) {
 
             when (val uiState = viewModel.userListState) {
-                is UserUiState.Error -> ErrorUi(message = uiState.message)
+                is UserUiState.Error -> ErrorText(message = uiState.message)
                 UserUiState.Loading -> CircularProgressIndicator()
                 is UserUiState.Success -> SuccessUi(
                     userList = uiState.usersList, onTap = onUserTap
@@ -179,10 +180,5 @@ fun SuccessUi(modifier: Modifier = Modifier, userList: List<User>, onTap: (Int) 
         }
     }
 
-}
-
-@Composable
-fun ErrorUi(message: String) {
-    Text(text = message, color = Color.Red, fontSize = 16.sp)
 }
 

@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.compose_list_me_app.R
 import com.example.compose_list_me_app.common.CustomFlexibleTopAppBar
+import com.example.compose_list_me_app.common.ErrorText
 import com.example.compose_list_me_app.common.MyAppBar
 import com.example.compose_list_me_app.ui.theme.PrimaryColor
 import kotlinx.serialization.Serializable
@@ -73,7 +74,7 @@ fun AlbumScreen(
             verticalArrangement = Arrangement.Center
         ) {
             when (val uiState = viewModel.photoListState) {
-                is PhotoUiState.Error -> Text(uiState.message)
+                is PhotoUiState.Error -> ErrorText(uiState.message)
                 PhotoUiState.Loading -> CircularProgressIndicator()
                 is PhotoUiState.Success -> LazyVerticalGrid(
                     modifier = Modifier.fillMaxSize(),

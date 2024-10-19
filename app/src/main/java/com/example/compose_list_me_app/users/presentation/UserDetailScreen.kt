@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.compose_list_me_app.R
+import com.example.compose_list_me_app.common.ErrorText
 import com.example.compose_list_me_app.ui.theme.BackgroundColor
 import com.example.compose_list_me_app.ui.theme.PrimaryColor
 import com.example.compose_list_me_app.ui.theme.SecondaryColor
@@ -219,7 +220,7 @@ fun Albums(
         Text(stringResource(R.string.albums), fontSize = 24.sp)
         Spacer(modifier = Modifier.height(12.dp))
         when (albumUiState) {
-            is AlbumUiState.Error -> Text(albumUiState.message, color = Color.Red)
+            is AlbumUiState.Error -> ErrorText(albumUiState.message)
             AlbumUiState.Loading -> Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
