@@ -31,9 +31,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
@@ -68,6 +71,11 @@ fun UserDetailScreen(
 
     val scrollState = rememberScrollState()
     val userData = userViewModel.userDetailState.user
+
+    // for some reason i can press back btn multiple times...
+    var backBtnState by remember {
+        mutableStateOf(true)
+    }
     Scaffold(
         modifier = modifier
             .fillMaxSize()
@@ -96,7 +104,11 @@ fun UserDetailScreen(
                     .verticalScroll(state = scrollState)
             ) {
                 IconButton(
-                    onClick = navigateBack, modifier = Modifier.safeDrawingPadding()
+                    enabled = backBtnState,
+                    onClick = {
+                        backBtnState = false
+                        navigateBack()
+                    }, modifier = Modifier.safeDrawingPadding()
                 ) {
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
