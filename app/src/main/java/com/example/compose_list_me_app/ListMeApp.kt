@@ -23,6 +23,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.compose_list_me_app.common.getNavItems
+import com.example.compose_list_me_app.posts.presentations.CommentsScreen
+import com.example.compose_list_me_app.posts.presentations.CommentsScreenObject
 import com.example.compose_list_me_app.posts.presentations.PostListScreen
 import com.example.compose_list_me_app.users.presentation.AlbumScreen
 import com.example.compose_list_me_app.users.presentation.AlbumScreenParams
@@ -45,10 +47,9 @@ fun NavGraph(modifier: Modifier = Modifier, navController: NavHostController) {
     NavHost(navController = navController, startDestination = NavPage) {
 
         composable<NavPage> {
-            NavPage(
-                onUserTap = {
-                    navController.navigate(UserDetailScreen(it))
-                }, usersVm = vm
+            NavPage(onUserTap = {
+                navController.navigate(UserDetailScreen(it))
+            }, onPostTap = { navController.navigate(CommentsScreenObject(it)) }, usersVm = vm
             )
         }
         composable<UserDetailScreen> {
@@ -64,6 +65,10 @@ fun NavGraph(modifier: Modifier = Modifier, navController: NavHostController) {
                 navController.popBackStack()
             })
         }
+        composable<CommentsScreenObject> {
+            val args = it.toRoute<CommentsScreenObject>()
+            CommentsScreen(postId = args.postId)
+        }
     }
 }
 
@@ -72,7 +77,12 @@ fun NavGraph(modifier: Modifier = Modifier, navController: NavHostController) {
 object NavPage
 
 @Composable
-fun NavPage(modifier: Modifier = Modifier, onUserTap: (Int) -> Unit, usersVm: UsersViewModel) {
+fun NavPage(
+    modifier: Modifier = Modifier,
+    onUserTap: (Int) -> Unit,
+    onPostTap: (Int) -> Unit,
+    usersVm: UsersViewModel
+) {
 
     val context = LocalContext.current
     var selectedIndex by remember {
@@ -100,7 +110,11 @@ fun NavPage(modifier: Modifier = Modifier, onUserTap: (Int) -> Unit, usersVm: Us
 
             )
 
-            1 -> PostListScreen(modifier = modifier.padding(bottom = it.calculateBottomPadding()))
+            1 -> PostListScreen(
+                modifier = modifier.padding(
+                    bottom = it.calculateBottomPadding()
+                ), navigateCommentsScreen = onPostTap
+            )
         }
     }
 }

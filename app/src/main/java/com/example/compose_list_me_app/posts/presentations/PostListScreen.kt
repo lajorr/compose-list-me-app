@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -45,8 +44,12 @@ import java.util.Locale
 @Composable
 fun PostListScreen(
     modifier: Modifier = Modifier,
-    postViewModel: PostViewModel = viewModel(factory = PostViewModel.Factory)
-) {
+    postViewModel: PostViewModel = viewModel(
+        factory = PostViewModel.Factory
+    ),
+    navigateCommentsScreen: (Int) -> Unit,
+
+    ) {
 
     Column(
         modifier = modifier
@@ -57,6 +60,7 @@ fun PostListScreen(
         MyAppBar(title = stringResource(R.string.posts), canPop = false)
         Column(
             modifier = Modifier
+                .fillMaxWidth()
                 .padding(16.dp)
                 .weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -70,7 +74,7 @@ fun PostListScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     itemsIndexed(uiState.allPosts) { index, post ->
-                        PostTile(index = index, post = post)
+                        PostTile(index = index, post = post, onTap = navigateCommentsScreen)
                     }
                 }
             }
@@ -81,15 +85,15 @@ fun PostListScreen(
 }
 
 @Composable
-fun PostTile(modifier: Modifier = Modifier, post: Post, index: Int) {
+fun PostTile(
+    modifier: Modifier = Modifier, post: Post, index: Int, onTap: (Int) -> Unit
+) {
     Box(modifier = modifier
         .fillMaxWidth()
-//        .height(110.dp)
         .clip(RoundedCornerShape(16.dp))
         .background(Color.White)
         .clickable {
-
-//            onTap(user.id)
+            onTap(post.id)
         }
         .padding(12.dp)) {
         Row(
@@ -121,7 +125,7 @@ fun PostTile(modifier: Modifier = Modifier, post: Post, index: Int) {
                     fontSize = 16.sp,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
-                    color = PrimaryColor
+                    color = SecondaryColor
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
