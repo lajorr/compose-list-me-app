@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.compose_list_me_app.R
 import com.example.compose_list_me_app.common.ErrorText
+import com.example.compose_list_me_app.posts.domain.models.Post
 import com.example.compose_list_me_app.ui.theme.BackgroundColor
 import com.example.compose_list_me_app.ui.theme.PrimaryColor
 import com.example.compose_list_me_app.ui.theme.SecondaryColor
@@ -64,7 +65,8 @@ fun UserDetailScreen(
     userViewModel: UsersViewModel,
     navigateBack: () -> Unit,
     onAlbumTap: (Int) -> Unit,
-    userId: Int
+    userId: Int,
+    postList: List<Post>
 ) {
     LaunchedEffect(Unit) {
         userViewModel.getUser(id = userId)
@@ -105,8 +107,7 @@ fun UserDetailScreen(
                     .verticalScroll(state = scrollState)
             ) {
                 IconButton(
-                    enabled = backBtnState,
-                    onClick = {
+                    enabled = backBtnState, onClick = {
                         backBtnState = false
                         navigateBack()
                     }, modifier = Modifier.safeDrawingPadding()
@@ -173,6 +174,7 @@ fun UserDetailScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
+//                        .weight(1f)
                         .background(Color.White)
                         .padding(16.dp)
                 ) {
@@ -182,7 +184,7 @@ fun UserDetailScreen(
                         onAlbumTap = onAlbumTap
                     )
                     Spacer(modifier = Modifier.height(24.dp))
-                    Posts()
+                    Posts(posts = postList)
 
                 }
             }
@@ -197,8 +199,7 @@ fun UserDetailScreen(
 @Composable
 fun UserInfoTile(title: String, value: String) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.width(80.dp)
+        horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(80.dp)
     ) {
 
         Text(title, fontWeight = FontWeight.Bold)
@@ -208,9 +209,7 @@ fun UserInfoTile(title: String, value: String) {
 
 @Composable
 fun Albums(
-    albumUiState: AlbumUiState,
-    getAlbums: () -> Unit,
-    onAlbumTap: (Int) -> Unit
+    albumUiState: AlbumUiState, getAlbums: () -> Unit, onAlbumTap: (Int) -> Unit
 ) {
     // init state
     LaunchedEffect(Unit) {
@@ -222,8 +221,7 @@ fun Albums(
         when (albumUiState) {
             is AlbumUiState.Error -> ErrorText(albumUiState.message)
             AlbumUiState.Loading -> Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
             }
@@ -261,22 +259,29 @@ fun Albums(
 }
 
 @Composable
-fun Posts(modifier: Modifier = Modifier) {
-    Text(stringResource(R.string.posts), fontSize = 24.sp)
-    Spacer(modifier = Modifier.height(12.dp))
-    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        (1..5).map {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(120.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(
-                        brush = Brush.linearGradient(
-                            colors = listOf(PrimaryColor, PrimaryColor.copy(0.9f))
+fun Posts(modifier: Modifier = Modifier, posts: List<Post>) {
+    Column(modifier = modifier) {
+
+        Text(stringResource(R.string.posts), fontSize = 24.sp)
+        Spacer(modifier = Modifier.height(12.dp))
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            (1..5).map{
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(
+                            brush = Brush.linearGradient(
+                                colors = listOf(PrimaryColor, PrimaryColor.copy(0.9f))
+                            )
                         )
-                    )
-            )
+                ) {
+                    Text("asd", color = Color.White, textAlign = TextAlign.Center)
+                }
+            }
+
         }
     }
 }

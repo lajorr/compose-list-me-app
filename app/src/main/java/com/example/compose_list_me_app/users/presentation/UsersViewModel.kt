@@ -66,6 +66,11 @@ class UsersViewModel(private val userRepository: UserRepository) : ViewModel() {
         }
     }
 
+    fun clearSearchText() {
+        searchText = ""
+        searchUsers()
+    }
+
 
     fun updateSearchText(text: String) {
         searchText = text
@@ -77,7 +82,7 @@ class UsersViewModel(private val userRepository: UserRepository) : ViewModel() {
         try {
 
             val filteredUsers = _userList.filter { user ->
-                user.name.lowercase().contains(searchText)
+                user.name.lowercase().contains(searchText.lowercase())
             }
             userListState = UserUiState.Success(filteredUsers)
 

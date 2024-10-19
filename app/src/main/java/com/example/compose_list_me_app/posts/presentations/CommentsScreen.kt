@@ -1,6 +1,5 @@
 package com.example.compose_list_me_app.posts.presentations
 
-import android.service.carrier.MessagePdu
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -18,11 +17,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -32,20 +29,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
-import com.example.compose_list_me_app.R
 import com.example.compose_list_me_app.common.ErrorText
-import com.example.compose_list_me_app.common.IconText
 import com.example.compose_list_me_app.common.MyAppBar
 import com.example.compose_list_me_app.posts.domain.models.Comment
 import com.example.compose_list_me_app.ui.theme.BackgroundColor
@@ -74,9 +62,9 @@ fun CommentsScreen(
         ) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = Color.White
+//                    containerColor = Color.White
                 )
             ) {
                 Column(modifier = Modifier.padding(12.dp)) {
@@ -85,10 +73,7 @@ fun CommentsScreen(
                             if (it.isLowerCase()) it.titlecase(
                                 Locale.getDefault()
                             ) else it.toString()
-                        },
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp,
-                        color = SecondaryColor
+                        }, fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = PrimaryColor
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
@@ -126,7 +111,7 @@ fun CommentList(
             is CommentUiState.Error -> ErrorText(commentUiState.message)
             CommentUiState.Loading -> CircularProgressIndicator()
             is CommentUiState.Success -> LazyColumn(
-                modifier, verticalArrangement = Arrangement.spacedBy(8.dp)
+                modifier, verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(commentUiState.postComments) { comment ->
                     CommentTile(comment = comment)
@@ -143,8 +128,9 @@ fun CommentTile(comment: Comment) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-//                    .height(120.dp)
-            .background(Color.White)
+            .background(Color.White),
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(Color.White)
     ) {
         Row(
             Modifier.padding(12.dp),
@@ -175,8 +161,7 @@ fun CommentTile(comment: Comment) {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    comment.body,
-                    color = PrimaryColor
+                    comment.body, color = PrimaryColor
                 )
             }
 

@@ -20,11 +20,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -90,6 +92,16 @@ fun UserListScreen(
                 ),
                 shape = RoundedCornerShape(50.dp),
                 leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = "search") },
+                trailingIcon = {
+                    IconButton(onClick = { viewModel.clearSearchText() }) {
+                        Icon(
+                            Icons.Default.Clear,
+                            contentDescription = "clear",
+                            tint = PrimaryColor,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                },
                 placeholder = { Text(text = "Search users") },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 maxLines = 1,

@@ -122,7 +122,7 @@ fun PostTile(
                     fontSize = 16.sp,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
-                    color = SecondaryColor
+                    color = PrimaryColor
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(

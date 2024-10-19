@@ -52,17 +52,21 @@ fun NavGraph(modifier: Modifier = Modifier, navController: NavHostController) {
         composable<NavPage> {
             NavPage(onUserTap = {
                 navController.navigate(UserDetailScreen(it))
-            }, onPostTap = { navController.navigate(CommentsScreenObject(it)) },
+            },
+                onPostTap = { navController.navigate(CommentsScreenObject(it)) },
                 usersVm = usersVm,
                 postVm = postVm
             )
         }
         composable<UserDetailScreen> {
             val args = it.toRoute<UserDetailScreen>()
-            UserDetailScreen(userViewModel = usersVm,
+            UserDetailScreen(
+                userViewModel = usersVm,
                 navigateBack = { navController.popBackStack() },
                 userId = args.id,
-                onAlbumTap = { albumId -> navController.navigate(AlbumScreenParams(albumId)) })
+                onAlbumTap = { albumId -> navController.navigate(AlbumScreenParams(albumId)) },
+                postList = postVm.getUserPosts(args.id)
+            )
         }
         composable<AlbumScreenParams> {
             val args = it.toRoute<AlbumScreenParams>()
@@ -73,11 +77,9 @@ fun NavGraph(modifier: Modifier = Modifier, navController: NavHostController) {
         composable<CommentsScreenObject> {
             val args = it.toRoute<CommentsScreenObject>()
             CommentsScreen(
-                postId = args.postId,
-                onPop = {
+                postId = args.postId, onPop = {
                     navController.popBackStack()
-                },
-                postViewModel = postVm
+                }, postViewModel = postVm
             )
         }
     }
@@ -118,17 +120,14 @@ fun NavPage(
             0 -> UserListScreen(
                 modifier = modifier.padding(
                     bottom = it.calculateBottomPadding()
-                ),
-                onUserTap = onUserTap,
-                viewModel = usersVm
+                ), onUserTap = onUserTap, viewModel = usersVm
 
             )
 
             1 -> PostListScreen(
                 modifier = modifier.padding(
                     bottom = it.calculateBottomPadding()
-                ), navigateCommentsScreen = onPostTap,
-                viewModel = postVm
+                ), navigateCommentsScreen = onPostTap, viewModel = postVm
             )
         }
     }

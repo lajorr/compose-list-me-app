@@ -35,6 +35,10 @@ class PostViewModel(private val postRepository: PostRepository) : ViewModel() {
 
     private var allPostList = mutableStateListOf<Post>()
 
+    // Todo: allComments List
+    // todo: filtered comments .. based on posts
+    // todo: add comments to room database
+
     var commentUiState: CommentUiState by mutableStateOf(CommentUiState.Loading)
         private set
 
@@ -55,6 +59,11 @@ class PostViewModel(private val postRepository: PostRepository) : ViewModel() {
         } catch (e: Exception) {
             postUiState = PostUiState.Error("Failed to Fetch Posts")
         }
+    }
+
+    fun getUserPosts(userId: Int): List<Post> {
+        val a = allPostList.filter { it.userId == userId }
+        return a
     }
 
     fun getPostById(postId: Int): Post {
