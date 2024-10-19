@@ -36,6 +36,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -44,6 +45,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.compose_list_me_app.R
+import com.example.compose_list_me_app.common.MyAppBar
 import com.example.compose_list_me_app.common.IconText
 import com.example.compose_list_me_app.ui.theme.BackgroundColor
 import com.example.compose_list_me_app.ui.theme.ContainerColor2
@@ -65,23 +67,10 @@ fun UserListScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Box {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(120.dp)
-                    .clip(RoundedCornerShape(bottomEnd = 40.dp, bottomStart = 40.dp))
-                    .background(PrimaryColor),
-                contentAlignment = Alignment.Center,
-
-                ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(text = "Users", color = Color.White, fontSize = 24.sp)
-                }
-
-            }
-
+            MyAppBar(
+                title = stringResource(R.string.users),
+                canPop = false
+            )
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -138,16 +127,15 @@ fun SuccessUi(modifier: Modifier = Modifier, userList: List<User>, onTap: (Int) 
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(userList) { user ->
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(Color.White)
-                    .clickable {
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp))
+                .background(Color.White)
+                .clickable {
 
-                        onTap(user.id)
-                    }
-                    .padding(12.dp)
+                    onTap(user.id)
+                }
+                .padding(12.dp)
 
             ) {
                 Row {

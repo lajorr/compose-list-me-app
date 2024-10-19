@@ -195,7 +195,10 @@ fun UserDetailScreen(
 
 @Composable
 fun UserInfoTile(title: String, value: String) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(100.dp)) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.width(80.dp)
+    ) {
 
         Text(title, fontWeight = FontWeight.Bold)
         Text(value, textAlign = TextAlign.Center)
