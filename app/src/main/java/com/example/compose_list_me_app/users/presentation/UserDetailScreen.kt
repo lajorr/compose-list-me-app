@@ -96,7 +96,6 @@ fun UserDetailScreen(
                 modifier = Modifier
                     .height(200.dp)
                     .fillMaxWidth()
-
                     .background(
                         brush = Brush.linearGradient(
                             colors = listOf(PrimaryColor, PrimaryColor.copy(0.8f))
@@ -127,8 +126,8 @@ fun UserDetailScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 40.dp)
                             .offset(y = 40.dp)
-                            .shadow(8.dp), shape = RoundedCornerShape(8.dp)
-
+                            .shadow(8.dp),
+                        shape = RoundedCornerShape(8.dp),
                     ) {
                         Column(
                             // User Info

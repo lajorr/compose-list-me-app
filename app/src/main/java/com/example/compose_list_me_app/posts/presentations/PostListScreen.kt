@@ -66,6 +66,7 @@ fun PostListScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+
             when (val uiState = viewModel.postUiState) {
                 is PostUiState.Error -> ErrorText(uiState.message)
                 PostUiState.Loading -> CircularProgressIndicator()
