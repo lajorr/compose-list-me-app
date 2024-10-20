@@ -7,13 +7,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -23,11 +20,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.compose_list_me_app.common.getNavItems
-import com.example.compose_list_me_app.posts.domain.models.Post
 import com.example.compose_list_me_app.posts.presentations.CommentsScreen
 import com.example.compose_list_me_app.posts.presentations.CommentsScreenObject
 import com.example.compose_list_me_app.posts.presentations.PostListScreen
 import com.example.compose_list_me_app.posts.presentations.PostViewModel
+import com.example.compose_list_me_app.ui.theme.PrimaryColor
+import com.example.compose_list_me_app.ui.theme.SecondaryColor
 import com.example.compose_list_me_app.users.presentation.AlbumScreen
 import com.example.compose_list_me_app.users.presentation.AlbumScreenParams
 import com.example.compose_list_me_app.users.presentation.UserDetailScreen
@@ -36,7 +34,7 @@ import com.example.compose_list_me_app.users.presentation.UsersViewModel
 import kotlinx.serialization.Serializable
 
 @Composable
-fun ListMeApp(modifier: Modifier = Modifier) {
+fun ListMeApp() {
 
     val navController = rememberNavController()
     NavGraph(navController = navController)
@@ -44,18 +42,21 @@ fun ListMeApp(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun NavGraph(modifier: Modifier = Modifier, navController: NavHostController) {
+fun NavGraph(navController: NavHostController) {
     val usersVm: UsersViewModel = viewModel(factory = UsersViewModel.Factory)
     val postVm: PostViewModel = viewModel(factory = PostViewModel.Factory)
+    val navVm: NavViewModel = viewModel(factory = NavViewModel.Factory)
     NavHost(navController = navController, startDestination = NavPage) {
 
         composable<NavPage> {
-            NavPage(onUserTap = {
-                navController.navigate(UserDetailScreen(it))
-            },
+            NavPage(
+                onUserTap = {
+                    navController.navigate(UserDetailScreen(it))
+                },
                 onPostTap = { navController.navigate(CommentsScreenObject(it)) },
                 usersVm = usersVm,
-                postVm = postVm
+                postVm = postVm,
+                navVm = navVm
             )
         }
         composable<UserDetailScreen> {
@@ -95,13 +96,12 @@ fun NavPage(
     onUserTap: (Int) -> Unit,
     onPostTap: (Int) -> Unit,
     usersVm: UsersViewModel,
-    postVm: PostViewModel
+    postVm: PostViewModel,
+    navVm: NavViewModel
 ) {
 
     val context = LocalContext.current
-    var selectedIndex by remember {
-        mutableIntStateOf(0)
-    }
+    val selectedIndex = navVm.selectedIndex.intValue
 
     Scaffold(modifier = Modifier
         .fillMaxSize()
@@ -109,10 +109,16 @@ fun NavPage(
         bottomBar = {
             NavigationBar {
                 getNavItems(context).forEachIndexed { index, item ->
-                    NavigationBarItem(selected = selectedIndex == index,
+                    NavigationBarItem(
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedTextColor = PrimaryColor,
+                            indicatorColor = PrimaryColor,
+                        ),
+                        selected = selectedIndex == index,
                         label = { Text(item.label) },
                         icon = { Icon(item.icon, contentDescription = "icon") },
-                        onClick = { selectedIndex = index })
+                        onClick = { navVm.updateSelectedIndex(index) },
+                    )
                 }
             }
         }) {

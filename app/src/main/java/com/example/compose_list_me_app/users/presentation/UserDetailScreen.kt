@@ -51,6 +51,7 @@ import coil.compose.AsyncImage
 import com.example.compose_list_me_app.R
 import com.example.compose_list_me_app.common.ErrorText
 import com.example.compose_list_me_app.posts.domain.models.Post
+import com.example.compose_list_me_app.posts.presentations.PostTile
 import com.example.compose_list_me_app.ui.theme.BackgroundColor
 import com.example.compose_list_me_app.ui.theme.PrimaryColor
 import com.example.compose_list_me_app.ui.theme.SecondaryColor
@@ -261,24 +262,16 @@ fun Albums(
 @Composable
 fun Posts(modifier: Modifier = Modifier, posts: List<Post>) {
     Column(modifier = modifier) {
-
         Text(stringResource(R.string.posts), fontSize = 24.sp)
         Spacer(modifier = Modifier.height(12.dp))
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            (1..5).map{
+//            (1..5).map {
+//
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(120.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(
-                            brush = Brush.linearGradient(
-                                colors = listOf(PrimaryColor, PrimaryColor.copy(0.9f))
-                            )
-                        )
-                ) {
-                    Text("asd", color = Color.White, textAlign = TextAlign.Center)
+//            }
+            posts.forEachIndexed { index, post ->
+                PostTile(post = post, index = index) {
+
                 }
             }
 
