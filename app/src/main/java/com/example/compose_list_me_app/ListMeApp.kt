@@ -12,6 +12,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -49,10 +50,9 @@ fun NavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = NavPage) {
 
         composable<NavPage> {
-            NavPage(
-                onUserTap = {
-                    navController.navigate(UserDetailScreen(it))
-                },
+            NavPage(onUserTap = {
+                navController.navigate(UserDetailScreen(it))
+            },
                 onPostTap = { navController.navigate(CommentsScreenObject(it)) },
                 usersVm = usersVm,
                 postVm = postVm,
@@ -61,13 +61,18 @@ fun NavGraph(navController: NavHostController) {
         }
         composable<UserDetailScreen> {
             val args = it.toRoute<UserDetailScreen>()
-            UserDetailScreen(
-                userViewModel = usersVm,
+            UserDetailScreen(userViewModel = usersVm,
                 navigateBack = { navController.popBackStack() },
                 userId = args.id,
                 onAlbumTap = { albumId -> navController.navigate(AlbumScreenParams(albumId)) },
-                postList = postVm.getUserPosts(args.id)
-            )
+                postList = postVm.getUserPosts(args.id),
+                navigateCommentsScreen = { postId ->
+                    navController.navigate(
+                        CommentsScreenObject(
+                            postId
+                        )
+                    )
+                })
         }
         composable<AlbumScreenParams> {
             val args = it.toRoute<AlbumScreenParams>()
@@ -113,6 +118,7 @@ fun NavPage(
                         colors = NavigationBarItemDefaults.colors(
                             selectedTextColor = PrimaryColor,
                             indicatorColor = PrimaryColor,
+                            selectedIconColor = Color.White,
                         ),
                         selected = selectedIndex == index,
                         label = { Text(item.label) },

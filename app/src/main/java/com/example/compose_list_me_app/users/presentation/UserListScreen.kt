@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.compose_list_me_app.R
+import com.example.compose_list_me_app.common.ElevatedCard
 import com.example.compose_list_me_app.common.ErrorText
 import com.example.compose_list_me_app.common.MyAppBar
 import com.example.compose_list_me_app.common.IconText
@@ -58,9 +59,7 @@ import com.example.compose_list_me_app.users.domain.models.user.User
 
 @Composable
 fun UserListScreen(
-    modifier: Modifier = Modifier,
-    viewModel: UsersViewModel,
-    onUserTap: (Int) -> Unit
+    modifier: Modifier = Modifier, viewModel: UsersViewModel, onUserTap: (Int) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -71,8 +70,7 @@ fun UserListScreen(
     ) {
         Box {
             MyAppBar(
-                title = stringResource(R.string.users),
-                canPop = false
+                title = stringResource(R.string.users), canPop = false
             )
             OutlinedTextField(
                 modifier = Modifier
@@ -137,29 +135,17 @@ fun SuccessUi(modifier: Modifier = Modifier, userList: List<User>, onTap: (Int) 
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(userList) { user ->
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
-                .background(Color.White)
-                .clickable {
-
-                    onTap(user.id)
-                }
-                .padding(12.dp)
-
-            ) {
-                Row {
+            ElevatedCard(onTap = { onTap(user.id) }) {
+                Row(modifier = Modifier.padding(12.dp)) {
                     AsyncImage(
                         modifier = Modifier
                             .size(50.dp)
                             .clip(RoundedCornerShape(25.dp))
                             .border(
-                                width = 2.dp,
-                                color = SecondaryColor,
-                                shape = RoundedCornerShape(50)
+                                width = 2.dp, color = SecondaryColor, shape = RoundedCornerShape(50)
                             ),
                         model = user.imageUrl,
                         contentDescription = "user",

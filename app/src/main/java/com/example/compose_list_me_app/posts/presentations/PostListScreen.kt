@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +33,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.compose_list_me_app.R
+import com.example.compose_list_me_app.common.ElevatedCard
 import com.example.compose_list_me_app.common.ErrorText
 import com.example.compose_list_me_app.common.MyAppBar
 import com.example.compose_list_me_app.posts.domain.models.Post
@@ -68,7 +71,7 @@ fun PostListScreen(
                 PostUiState.Loading -> CircularProgressIndicator()
                 is PostUiState.Success -> LazyColumn(
                     modifier = Modifier.fillMaxHeight(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     itemsIndexed(uiState.allPosts) { index, post ->
                         PostTile(index = index, post = post, onTap = navigateCommentsScreen)
@@ -81,20 +84,19 @@ fun PostListScreen(
 
 @Composable
 fun PostTile(
-    modifier: Modifier = Modifier, post: Post, index: Int, onTap: (Int) -> Unit
+    modifier: Modifier = Modifier,
+    post: Post,
+    index: Int,
+    onTap: (Int) -> Unit,
+    bgColor: Color = Color.White
 ) {
-    Box(modifier = modifier
-        .fillMaxWidth()
-        .clip(RoundedCornerShape(16.dp))
-        .background(Color.White)
-        .clickable {
-            onTap(post.id)
-        }
-        .padding(12.dp)) {
+    ElevatedCard(onTap = { onTap(post.id) }) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(intrinsicSize = IntrinsicSize.Min),
+                .height(intrinsicSize = IntrinsicSize.Min)
+                .background(bgColor)
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {

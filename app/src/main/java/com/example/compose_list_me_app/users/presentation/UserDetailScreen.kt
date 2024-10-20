@@ -67,7 +67,8 @@ fun UserDetailScreen(
     navigateBack: () -> Unit,
     onAlbumTap: (Int) -> Unit,
     userId: Int,
-    postList: List<Post>
+    postList: List<Post>,
+    navigateCommentsScreen: (Int) -> Unit
 ) {
     LaunchedEffect(Unit) {
         userViewModel.getUser(id = userId)
@@ -185,7 +186,7 @@ fun UserDetailScreen(
                         onAlbumTap = onAlbumTap
                     )
                     Spacer(modifier = Modifier.height(24.dp))
-                    Posts(posts = postList)
+                    Posts(posts = postList, onPostTap = navigateCommentsScreen)
 
                 }
             }
@@ -260,21 +261,19 @@ fun Albums(
 }
 
 @Composable
-fun Posts(modifier: Modifier = Modifier, posts: List<Post>) {
+fun Posts(modifier: Modifier = Modifier, posts: List<Post>, onPostTap: (Int) -> Unit) {
     Column(modifier = modifier) {
         Text(stringResource(R.string.posts), fontSize = 24.sp)
         Spacer(modifier = Modifier.height(12.dp))
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-//            (1..5).map {
-//
-
-//            }
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             posts.forEachIndexed { index, post ->
-                PostTile(post = post, index = index) {
-
-                }
+                PostTile(
+                    post = post,
+                    index = index,
+                    bgColor = BackgroundColor,
+                    onTap = onPostTap
+                )
             }
-
         }
     }
 }
