@@ -7,6 +7,6 @@ interface CommentRepository {
     suspend fun fetchCommentsOfPost(postId: Int): List<Comment>
 
     suspend fun addComment(comment: Comment)
-    fun getCommentsOfPost(postId: Int): Flow<List<Comment>>
+    suspend fun getLocalCommentsOfPost(postId: Int): List<Comment>
 
 }

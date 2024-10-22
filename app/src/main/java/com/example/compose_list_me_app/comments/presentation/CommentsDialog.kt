@@ -36,7 +36,8 @@ import com.example.compose_list_me_app.ui.theme.PrimaryColor
 
 @Composable
 fun CommentsDialog(
-    viewModel: CommentsViewModel
+    viewModel: CommentsViewModel,
+    postId: Int
 ) {
 
     Dialog(
@@ -71,19 +72,7 @@ fun CommentsDialog(
                     errorMessage = viewModel.nameErrorText
                 )
 
-                CustomTextField(
-                    cornerRadius = 8,
-                    onTextChange = viewModel::onEmailChange,
-                    textController = viewModel.emailController,
-                    leadingIcon = {
-                        Icon(
-                            Icons.Outlined.Email,
-                            contentDescription = stringResource(R.string.email),
-                        )
-                    },
-                    hintText = stringResource(R.string.email),
-                    errorMessage = viewModel.emailErrorText
-                )
+
 
                 CustomTextField(
                     cornerRadius = 8,
@@ -117,7 +106,10 @@ fun CommentsDialog(
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(
-                        onClick = viewModel::onConfirmDialog,
+                        onClick = {
+                            viewModel.onConfirmDialog(postId)
+                            viewModel.getCommentsByPostId(postId)
+                        },
                         colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor)
                     ) {
                         Text("Confirm")

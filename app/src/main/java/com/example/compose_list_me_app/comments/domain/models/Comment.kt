@@ -8,7 +8,6 @@ data class Comment(
     @PrimaryKey
     val id: Int,
     val body: String,
-    val email: String,
     val name: String,
     val postId: Int
 )

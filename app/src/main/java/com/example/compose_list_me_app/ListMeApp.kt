@@ -86,7 +86,6 @@ fun NavGraph(navController: NavHostController) {
         composable<CommentsScreenObject> {
             val args = it.toRoute<CommentsScreenObject>()
             CommentsScreen(
-                postId = args.postId,
                 onPop = {
                     navController.popBackStack()
                 },

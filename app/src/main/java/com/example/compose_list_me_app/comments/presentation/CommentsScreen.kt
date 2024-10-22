@@ -35,9 +35,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.compose_list_me_app.comments.domain.models.Comment
 import com.example.compose_list_me_app.common.composables.ErrorText
 import com.example.compose_list_me_app.common.composables.MyAppBar
-import com.example.compose_list_me_app.comments.domain.models.Comment
 import com.example.compose_list_me_app.posts.domain.models.Post
 import com.example.compose_list_me_app.ui.theme.BackgroundColor
 import com.example.compose_list_me_app.ui.theme.PrimaryColor
@@ -51,8 +51,6 @@ data class CommentsScreenObject(val postId: Int)
 
 @Composable
 fun CommentsScreen(
-    modifier: Modifier = Modifier,
-    postId: Int,
     onPop: () -> Unit,
     commentsViewModel: CommentsViewModel,
     post: Post
@@ -107,15 +105,15 @@ fun CommentsScreen(
             Spacer(modifier = Modifier.height(16.dp))
             CommentList(
                 modifier = Modifier.weight(1f),
-                getComments = { commentsViewModel.getCommentsByPostId(postId) },
+                getComments = { commentsViewModel.getCommentsByPostId(post.id) },
                 commentUiState = commentsViewModel.commentUiState
             )
 
         }
         if (commentsViewModel.isDialogShown)
             CommentsDialog(
-
-                viewModel = commentsViewModel
+                viewModel = commentsViewModel,
+                postId = post.id
             )
     }
 }

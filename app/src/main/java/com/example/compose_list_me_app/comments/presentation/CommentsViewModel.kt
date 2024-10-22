@@ -12,6 +12,7 @@ import com.example.compose_list_me_app.ListMeApplication
 import com.example.compose_list_me_app.comments.domain.models.Comment
 import com.example.compose_list_me_app.comments.domain.repositories.CommentRepository
 import kotlinx.coroutines.launch
+import java.util.Date
 
 
 sealed interface CommentUiState {
@@ -22,8 +23,9 @@ sealed interface CommentUiState {
 
 typealias TextEditingController = String
 
-
-class CommentsViewModel(private val commentRepository: CommentRepository) : ViewModel() {
+class CommentsViewModel(
+    private val commentRepository: CommentRepository,
+) : ViewModel() {
 
 
     // Todo: allComments List
@@ -36,32 +38,30 @@ class CommentsViewModel(private val commentRepository: CommentRepository) : View
     var isDialogShown by mutableStateOf(false)
         private set
 
-    var nameController by mutableStateOf<TextEditingController>("")
+    var nameController by mutableStateOf("")
         private set
-    var emailController by mutableStateOf<TextEditingController>("")
-        private set
-    var commentController by mutableStateOf<TextEditingController>("")
+
+    var commentController by mutableStateOf("")
         private set
 
 
     var nameErrorText: String? by mutableStateOf(null)
         private set
 
-    var emailErrorText: String? by mutableStateOf(null)
-        private set
 
     var commentErrorText: String? by mutableStateOf(null)
         private set
 
+
+//    val postComments = commentRemoteRepository.getCommentsOfPost()
+
     private fun clearInputs() {
         nameController = ""
-        emailController = ""
         commentController = ""
     }
 
     private fun clearErrorText() {
         nameErrorText = null
-        emailErrorText = null
         commentErrorText = null
     }
 
@@ -71,20 +71,24 @@ class CommentsViewModel(private val commentRepository: CommentRepository) : View
         isDialogShown = false
     }
 
-    fun onConfirmDialog() {
+    fun onConfirmDialog(postId: Int) {
         // todo: validate input
         if (validateInput()) {
             // todo!!: convert input to Comment
+            val comment = Comment(
+                Date().time.toInt(), body = commentController, name = nameController, postId
+            )
 
-            // todo: add comment to database
-            // todo: room database.....
-            onDismissDialog()
+            viewModelScope.launch {
+                commentRepository.addComment(comment)
+                onDismissDialog()
+            }
         }
     }
 
     private fun validateInput(): Boolean {
         val truthValues = listOf(
-            validateName(), validateEmail(), validateComment()
+            validateName(), validateComment()
         )
         return truthValues.any { !it }.not()
     }
@@ -104,21 +108,6 @@ class CommentsViewModel(private val commentRepository: CommentRepository) : View
         return true
     }
 
-    private fun validateEmail(): Boolean {
-        emailErrorText = null
-
-        if (emailController.isEmpty()) {
-            emailErrorText = "Email is required"
-            return false
-        } else {
-            val emailRegex = Regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$")
-            if (!emailRegex.matches(emailController)) {
-                emailErrorText = "Invalid email"
-                return false
-            }
-        }
-        return true
-    }
 
     private fun validateComment(): Boolean {
         commentErrorText = null
@@ -147,18 +136,15 @@ class CommentsViewModel(private val commentRepository: CommentRepository) : View
         commentController = newValue
     }
 
-    fun onEmailChange(newValue: String) {
-        emailController = newValue
-    }
-
 
     fun getCommentsByPostId(postId: Int) {
         commentUiState = CommentUiState.Loading
-        // todo: also fetch from database...
-        // todo: add query to select comments based on postId
+
         try {
             viewModelScope.launch {
-                val comments = commentRepository.fetchCommentsOfPost(postId)
+                val remoteComments = commentRepository.fetchCommentsOfPost(postId)
+                val localComments = commentRepository.getLocalCommentsOfPost(postId).reversed()
+                val comments = localComments + remoteComments
                 commentUiState = CommentUiState.Success(comments)
             }
         } catch (e: Exception) {
@@ -171,7 +157,9 @@ class CommentsViewModel(private val commentRepository: CommentRepository) : View
         val Factory = viewModelFactory {
             initializer {
                 val application = this[APPLICATION_KEY] as ListMeApplication
-                CommentsViewModel(commentRepository = application.container.commentRepository)
+                CommentsViewModel(
+                    commentRepository = application.container.commentRepository,
+                )
             }
         }
     }

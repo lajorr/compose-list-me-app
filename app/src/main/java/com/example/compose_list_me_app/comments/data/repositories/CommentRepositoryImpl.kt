@@ -7,8 +7,7 @@ import com.example.compose_list_me_app.comments.domain.repositories.CommentRepos
 import kotlinx.coroutines.flow.Flow
 
 class CommentRepositoryImpl(
-    private val commentRemoteDatasource: CommentRemoteDatasource,
-    private val commentDao: CommentDao
+    private val commentRemoteDatasource: CommentRemoteDatasource, private val commentDao: CommentDao
 ) : CommentRepository {
     override suspend fun fetchCommentsOfPost(postId: Int): List<Comment> {
 
@@ -28,6 +27,6 @@ class CommentRepositoryImpl(
 
     override suspend fun addComment(comment: Comment) = commentDao.addComment(comment)
 
-    override fun getCommentsOfPost(postId: Int): Flow<List<Comment>> =
+    override suspend fun getLocalCommentsOfPost(postId: Int): List<Comment> =
         commentDao.getCommentsOfPost(postId)
 }
