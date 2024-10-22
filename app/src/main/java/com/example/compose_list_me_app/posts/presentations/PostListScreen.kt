@@ -2,7 +2,6 @@ package com.example.compose_list_me_app.posts.presentations
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,8 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,9 +30,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.compose_list_me_app.R
-import com.example.compose_list_me_app.common.ElevatedCard
-import com.example.compose_list_me_app.common.ErrorText
-import com.example.compose_list_me_app.common.MyAppBar
+import com.example.compose_list_me_app.common.composables.ElevatedCard
+import com.example.compose_list_me_app.common.composables.ErrorText
+import com.example.compose_list_me_app.common.composables.MyAppBar
 import com.example.compose_list_me_app.posts.domain.models.Post
 import com.example.compose_list_me_app.ui.theme.BackgroundColor
 import com.example.compose_list_me_app.ui.theme.PrimaryColor

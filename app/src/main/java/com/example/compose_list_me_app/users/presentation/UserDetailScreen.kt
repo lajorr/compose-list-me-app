@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.compose_list_me_app.R
-import com.example.compose_list_me_app.common.ErrorText
+import com.example.compose_list_me_app.common.composables.ErrorText
 import com.example.compose_list_me_app.posts.domain.models.Post
 import com.example.compose_list_me_app.posts.presentations.PostTile
 import com.example.compose_list_me_app.ui.theme.BackgroundColor

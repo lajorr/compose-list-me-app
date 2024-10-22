@@ -1,4 +1,4 @@
-package com.example.compose_list_me_app.common
+package com.example.compose_list_me_app.common.composables
 
 import android.content.Context
 import androidx.compose.material.icons.Icons

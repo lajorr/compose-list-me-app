@@ -1,4 +1,4 @@
-package com.example.compose_list_me_app.common
+package com.example.compose_list_me_app.common.composables
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.AnimationSpec

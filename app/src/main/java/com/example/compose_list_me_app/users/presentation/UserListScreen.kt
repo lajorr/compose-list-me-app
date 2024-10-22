@@ -39,11 +39,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.compose_list_me_app.R
-import com.example.compose_list_me_app.common.ElevatedCard
-import com.example.compose_list_me_app.common.ErrorText
-import com.example.compose_list_me_app.common.MyAppBar
-import com.example.compose_list_me_app.common.IconText
-import com.example.compose_list_me_app.common.CustomTextField
+import com.example.compose_list_me_app.common.composables.ElevatedCard
+import com.example.compose_list_me_app.common.composables.ErrorText
+import com.example.compose_list_me_app.common.composables.MyAppBar
+import com.example.compose_list_me_app.common.composables.IconText
+import com.example.compose_list_me_app.common.composables.CustomTextField
 import com.example.compose_list_me_app.ui.theme.BackgroundColor
 import com.example.compose_list_me_app.ui.theme.PrimaryColor
 import com.example.compose_list_me_app.ui.theme.SecondaryColor
@@ -70,7 +70,7 @@ fun UserListScreen(
                     .padding(horizontal = 20.dp)
                     .offset(y = 25.dp),
                 onTextChange = viewModel::updateSearchText,
-                inputValue = viewModel.searchText,
+                textController = viewModel.searchText,
                 trailingIcon = {
                     IconButton(onClick = viewModel::clearSearchText) {
                         Icon(
@@ -82,9 +82,9 @@ fun UserListScreen(
                     }
                 },
                 leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = "search") },
-                hintText = stringResource(R.string.search_users)
+                hintText = stringResource(R.string.search_users),
 
-            )
+                )
         }
         Spacer(modifier = Modifier.height(30.dp))
         Column(

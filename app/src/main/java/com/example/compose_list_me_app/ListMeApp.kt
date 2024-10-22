@@ -20,7 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.example.compose_list_me_app.common.getNavItems
+import com.example.compose_list_me_app.common.composables.getNavItems
 import com.example.compose_list_me_app.posts.presentations.CommentsScreen
 import com.example.compose_list_me_app.posts.presentations.CommentsScreenObject
 import com.example.compose_list_me_app.posts.presentations.CommentsViewModel

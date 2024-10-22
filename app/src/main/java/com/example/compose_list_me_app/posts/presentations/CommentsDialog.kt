@@ -1,6 +1,5 @@
 package com.example.compose_list_me_app.posts.presentations
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,24 +25,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.compose_list_me_app.R
-import com.example.compose_list_me_app.common.CustomTextField
+import com.example.compose_list_me_app.common.composables.CustomTextField
+import com.example.compose_list_me_app.common.composables.ErrorText
 import com.example.compose_list_me_app.ui.theme.BackgroundColor
 import com.example.compose_list_me_app.ui.theme.PrimaryColor
 
+
 @Composable
 fun CommentsDialog(
-    modifier: Modifier = Modifier,
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit = {},
+    viewModel: CommentsViewModel
 ) {
 
     Dialog(
-        onDismissRequest = onDismiss, properties = DialogProperties(
+        onDismissRequest = viewModel::onDismissDialog, properties = DialogProperties(
             usePlatformDefaultWidth = false
         )
     ) {
@@ -59,63 +57,69 @@ fun CommentsDialog(
                 modifier = Modifier.padding(20.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+
                 CustomTextField(
                     cornerRadius = 8,
-                    onTextChange = {},
-                    inputValue = "",
+                    onTextChange = viewModel::onNameChange,
+                    textController = viewModel.nameController,
                     leadingIcon = {
                         Icon(
                             Icons.Filled.Face,
                             contentDescription = stringResource(R.string.name),
-                            tint = PrimaryColor
                         )
                     },
-                    hintText = stringResource(R.string.name)
+                    hintText = stringResource(R.string.name),
+                    errorMessage = viewModel.nameErrorText
                 )
+
                 CustomTextField(
                     cornerRadius = 8,
-                    onTextChange = {},
-                    inputValue = "",
+                    onTextChange = viewModel::onEmailChange,
+                    textController = viewModel.emailController,
                     leadingIcon = {
                         Icon(
                             Icons.Outlined.Email,
                             contentDescription = stringResource(R.string.email),
-                            tint = PrimaryColor
                         )
                     },
-                    hintText = stringResource(R.string.email)
+                    hintText = stringResource(R.string.email),
+                    errorMessage = viewModel.emailErrorText
                 )
+
                 CustomTextField(
                     cornerRadius = 8,
-                    onTextChange = {},
-                    inputValue = "",
+                    onTextChange = viewModel::onCommentChange,
+                    textController = viewModel.commentController,
                     leadingIcon = {
                         Icon(
                             Icons.Filled.Create,
                             contentDescription = stringResource(R.string.comment),
-                            tint = PrimaryColor
                         )
                     },
-                    hintText = stringResource(R.string.comment)
+                    hintText = stringResource(R.string.comment),
+                    maxLines = 5,
+                    errorMessage = viewModel.commentErrorText
+
                 )
+
                 Spacer(modifier = Modifier.height(4.dp))
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
+                    modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End
                 ) {
                     OutlinedButton(
-                        onClick = onDismiss, colors = ButtonDefaults.outlinedButtonColors(
+                        onClick = viewModel::onDismissDialog,
+                        colors = ButtonDefaults.outlinedButtonColors(
                             containerColor = Color.Transparent,
                             contentColor = PrimaryColor,
-                        ), border = BorderStroke(1.dp, PrimaryColor)
+                        ),
+                        border = BorderStroke(1.dp, PrimaryColor)
                     ) {
                         Text("Cancel")
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(
-                        onClick = {
-                            Log.i("DialogBox", "CommentsDialog: Confirm")
-                        }, colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor)
+                        onClick = viewModel::onConfirmDialog,
+                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor)
                     ) {
                         Text("Confirm")
                     }
@@ -127,9 +131,16 @@ fun CommentsDialog(
 
 }
 
-
-@Preview(showBackground = true)
-@Composable
-private fun CommentsDialogPrev() {
-    CommentsDialog(onDismiss = {})
-}
+//
+//@Preview(showBackground = true)
+//@Composable
+//private fun CommentsDialogPrev() {
+//    CommentsDialog(onDismiss = {},
+//        onConfirm = {},
+//        nameController = "",
+//        emailController = "",
+//        commentController = "",
+//        onCommentChange = {},
+//        onEmailChange = {},
+//        onNameChange = {})
+//}

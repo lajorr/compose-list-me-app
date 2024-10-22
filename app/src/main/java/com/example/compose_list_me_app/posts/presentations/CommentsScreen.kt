@@ -35,8 +35,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.compose_list_me_app.common.ErrorText
-import com.example.compose_list_me_app.common.MyAppBar
+import com.example.compose_list_me_app.common.composables.ErrorText
+import com.example.compose_list_me_app.common.composables.MyAppBar
 import com.example.compose_list_me_app.posts.domain.models.Comment
 import com.example.compose_list_me_app.posts.domain.models.Post
 import com.example.compose_list_me_app.ui.theme.BackgroundColor
@@ -47,6 +47,7 @@ import java.util.Locale
 
 @Serializable
 data class CommentsScreenObject(val postId: Int)
+
 
 @Composable
 fun CommentsScreen(
@@ -112,7 +113,10 @@ fun CommentsScreen(
 
         }
         if (commentsViewModel.isDialogShown)
-            CommentsDialog(onDismiss = commentsViewModel::onDismissDialog)
+            CommentsDialog(
+
+                viewModel = commentsViewModel
+            )
     }
 }
 

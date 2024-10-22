@@ -1,5 +1,6 @@
 package com.example.compose_list_me_app.posts.presentations
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -20,6 +21,9 @@ sealed interface CommentUiState {
     data object Loading : CommentUiState
 }
 
+typealias TextEditingController = String
+
+
 class CommentsViewModel(private val commentRepository: CommentRepository) : ViewModel() {
 
 
@@ -33,8 +37,100 @@ class CommentsViewModel(private val commentRepository: CommentRepository) : View
     var isDialogShown by mutableStateOf(false)
         private set
 
+    var nameController by mutableStateOf<TextEditingController>("")
+        private set
+    var emailController by mutableStateOf<TextEditingController>("")
+        private set
+    var commentController by mutableStateOf<TextEditingController>("")
+        private set
+
+
+    var nameErrorText: String? by mutableStateOf(null)
+        private set
+
+    var emailErrorText: String? by mutableStateOf(null)
+        private set
+
+    var commentErrorText: String? by mutableStateOf(null)
+        private set
+
+    private fun clearInputs() {
+        nameController = ""
+        emailController = ""
+        commentController = ""
+    }
+
+    private fun clearErrorText() {
+        nameErrorText = null
+        emailErrorText = null
+        commentErrorText = null
+    }
+
     fun onDismissDialog() {
+        clearInputs()
+        clearErrorText()
         isDialogShown = false
+    }
+
+    fun onConfirmDialog() {
+        // todo: validate input
+        if (validateInput()) {
+            // todo: add comment to database
+            // todo: room database.....
+            onDismissDialog()
+        }
+    }
+
+    private fun validateInput(): Boolean {
+        val truthValues = listOf(
+            validateName(), validateEmail(), validateComment()
+        )
+        return truthValues.any { !it }.not()
+    }
+
+    private fun validateName(): Boolean {
+        nameErrorText = null
+        if (nameController.isEmpty()) {
+            nameErrorText = "Name is required"
+            return false
+
+        } else {
+            if (nameController.length < 3 || nameController.length > 20) {
+                nameErrorText = "Name must be between 3 and 20 characters"
+                return false
+            }
+        }
+        return true
+    }
+
+    private fun validateEmail(): Boolean {
+        emailErrorText = null
+
+        if (emailController.isEmpty()) {
+            emailErrorText = "Email is required"
+            return false
+        } else {
+            val emailRegex = Regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\$")
+            if (!emailRegex.matches(emailController)) {
+                emailErrorText = "Invalid email"
+                return false
+            }
+        }
+        return true
+    }
+
+    private fun validateComment(): Boolean {
+        commentErrorText = null
+        if (commentController.isEmpty()) {
+            commentErrorText = "Comment is required"
+            return false
+        } else {
+            if (commentController.length < 5 || commentController.length > 50) {
+                commentErrorText = "Comment must be between 5 and 50 characters"
+                return false
+            }
+        }
+        return true
     }
 
     fun onShowDialog() {
@@ -42,8 +138,23 @@ class CommentsViewModel(private val commentRepository: CommentRepository) : View
     }
 
 
+    fun onNameChange(newValue: String) {
+        nameController = newValue
+    }
+
+    fun onCommentChange(newValue: String) {
+        commentController = newValue
+    }
+
+    fun onEmailChange(newValue: String) {
+        emailController = newValue
+    }
+
+
     fun getCommentsByPostId(postId: Int) {
         commentUiState = CommentUiState.Loading
+        // todo: also fetch from database...
+        // todo: add query to select comments based on postId
         try {
             viewModelScope.launch {
                 val comments = commentRepository.fetchCommentsOfPost(postId)
