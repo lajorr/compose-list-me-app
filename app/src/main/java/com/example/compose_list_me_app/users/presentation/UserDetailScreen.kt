@@ -1,5 +1,7 @@
 package com.example.compose_list_me_app.users.presentation
 
+import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -41,6 +43,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -107,16 +111,36 @@ fun UserDetailScreen(
                     .fillMaxSize()
                     .verticalScroll(state = scrollState)
             ) {
-                IconButton(
-                    enabled = backBtnState, onClick = {
-                        backBtnState = false
-                        navigateBack()
-                    }, modifier = Modifier.safeDrawingPadding()
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .safeDrawingPadding(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
-                        tint = Color.White,
-                        contentDescription = stringResource(R.string.back)
+                    IconButton(
+                        enabled = backBtnState,
+                        onClick = {
+                            backBtnState = false
+                            navigateBack()
+                        },
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            tint = Color.White,
+                            contentDescription = stringResource(R.string.back)
+                        )
+                    }
+                    Image(
+                        painterResource(R.drawable.todo),
+                        contentScale = ContentScale.FillHeight,
+                        contentDescription = "",
+                        modifier = Modifier
+                            .height(32.dp)
+                            .padding(end = 12.dp)
+                            .clickable {
+                                Log.i("TODOO", "UserDetailScreen: todos")
+                            },
                     )
                 }
                 // User
