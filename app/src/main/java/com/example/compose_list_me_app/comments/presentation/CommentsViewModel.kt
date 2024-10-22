@@ -1,6 +1,5 @@
-package com.example.compose_list_me_app.posts.presentations
+package com.example.compose_list_me_app.comments.presentation
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,8 +9,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.compose_list_me_app.ListMeApplication
-import com.example.compose_list_me_app.posts.domain.models.Comment
-import com.example.compose_list_me_app.posts.domain.repositories.CommentRepository
+import com.example.compose_list_me_app.comments.domain.models.Comment
+import com.example.compose_list_me_app.comments.domain.repositories.CommentRepository
 import kotlinx.coroutines.launch
 
 

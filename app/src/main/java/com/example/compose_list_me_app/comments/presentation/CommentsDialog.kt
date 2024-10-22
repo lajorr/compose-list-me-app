@@ -1,4 +1,4 @@
-package com.example.compose_list_me_app.posts.presentations
+package com.example.compose_list_me_app.comments.presentation
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +30,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.compose_list_me_app.R
 import com.example.compose_list_me_app.common.composables.CustomTextField
-import com.example.compose_list_me_app.common.composables.ErrorText
 import com.example.compose_list_me_app.ui.theme.BackgroundColor
 import com.example.compose_list_me_app.ui.theme.PrimaryColor
 

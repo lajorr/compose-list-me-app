@@ -1,6 +1,6 @@
-package com.example.compose_list_me_app.posts.data.datasource
+package com.example.compose_list_me_app.comments.data.datasource
 
-import com.example.compose_list_me_app.posts.domain.models.Comment
+import com.example.compose_list_me_app.comments.domain.models.Comment
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path

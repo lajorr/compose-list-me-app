@@ -10,7 +10,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.compose_list_me_app.ListMeApplication
-import com.example.compose_list_me_app.posts.domain.models.Comment
 import com.example.compose_list_me_app.posts.domain.models.Post
 import com.example.compose_list_me_app.posts.domain.repositories.PostRepository
 import kotlinx.coroutines.launch

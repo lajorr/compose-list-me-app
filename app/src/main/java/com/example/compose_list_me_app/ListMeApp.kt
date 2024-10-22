@@ -21,9 +21,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.compose_list_me_app.common.composables.getNavItems
-import com.example.compose_list_me_app.posts.presentations.CommentsScreen
-import com.example.compose_list_me_app.posts.presentations.CommentsScreenObject
-import com.example.compose_list_me_app.posts.presentations.CommentsViewModel
+import com.example.compose_list_me_app.comments.presentation.CommentsScreen
+import com.example.compose_list_me_app.comments.presentation.CommentsScreenObject
+import com.example.compose_list_me_app.comments.presentation.CommentsViewModel
 import com.example.compose_list_me_app.posts.presentations.PostListScreen
 import com.example.compose_list_me_app.posts.presentations.PostViewModel
 import com.example.compose_list_me_app.ui.theme.PrimaryColor

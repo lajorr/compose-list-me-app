@@ -1,11 +1,10 @@
 package com.example.compose_list_me_app
 
-import com.example.compose_list_me_app.posts.data.datasource.CommentDatasource
+import com.example.compose_list_me_app.comments.data.datasource.CommentDatasource
 import com.example.compose_list_me_app.posts.data.datasource.PostDatasource
-import com.example.compose_list_me_app.posts.data.repositories.CommentRepositoryImpl
+import com.example.compose_list_me_app.comments.data.repositories.CommentRepositoryImpl
 import com.example.compose_list_me_app.posts.data.repositories.PostRepositoryImpl
-import com.example.compose_list_me_app.posts.domain.models.Comment
-import com.example.compose_list_me_app.posts.domain.repositories.CommentRepository
+import com.example.compose_list_me_app.comments.domain.repositories.CommentRepository
 import com.example.compose_list_me_app.posts.domain.repositories.PostRepository
 import com.example.compose_list_me_app.users.data.datasource.UserRemoteDataSource
 import com.example.compose_list_me_app.users.data.respositories.UserRepositoryImpl

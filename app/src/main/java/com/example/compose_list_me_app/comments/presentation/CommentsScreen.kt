@@ -1,4 +1,4 @@
-package com.example.compose_list_me_app.posts.presentations
+package com.example.compose_list_me_app.comments.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.compose_list_me_app.common.composables.ErrorText
 import com.example.compose_list_me_app.common.composables.MyAppBar
-import com.example.compose_list_me_app.posts.domain.models.Comment
+import com.example.compose_list_me_app.comments.domain.models.Comment
 import com.example.compose_list_me_app.posts.domain.models.Post
 import com.example.compose_list_me_app.ui.theme.BackgroundColor
 import com.example.compose_list_me_app.ui.theme.PrimaryColor

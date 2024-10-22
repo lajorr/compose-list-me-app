@@ -1,4 +1,4 @@
-package com.example.compose_list_me_app.posts.domain.models
+package com.example.compose_list_me_app.comments.domain.models
 
 data class Comment(
     val body: String,

@@ -1,8 +1,8 @@
-package com.example.compose_list_me_app.posts.data.repositories
+package com.example.compose_list_me_app.comments.data.repositories
 
-import com.example.compose_list_me_app.posts.data.datasource.CommentDatasource
-import com.example.compose_list_me_app.posts.domain.models.Comment
-import com.example.compose_list_me_app.posts.domain.repositories.CommentRepository
+import com.example.compose_list_me_app.comments.data.datasource.CommentDatasource
+import com.example.compose_list_me_app.comments.domain.models.Comment
+import com.example.compose_list_me_app.comments.domain.repositories.CommentRepository
 
 class CommentRepositoryImpl(private val commentDatasource: CommentDatasource) : CommentRepository {
     override suspend fun fetchCommentsOfPost(postId: Int): List<Comment> {
