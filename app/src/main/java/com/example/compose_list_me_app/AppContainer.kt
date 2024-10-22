@@ -1,8 +1,12 @@
 package com.example.compose_list_me_app
 
-import com.example.compose_list_me_app.comments.data.datasource.CommentDatasource
+import android.content.Context
+import androidx.room.Room
+import com.example.compose_list_me_app.comments.data.datasource.CommentRemoteDatasource
+import com.example.compose_list_me_app.comments.data.datasource.localDatasource.CommentDatabase
 import com.example.compose_list_me_app.posts.data.datasource.PostDatasource
 import com.example.compose_list_me_app.comments.data.repositories.CommentRepositoryImpl
+import com.example.compose_list_me_app.comments.domain.models.Comment
 import com.example.compose_list_me_app.posts.data.repositories.PostRepositoryImpl
 import com.example.compose_list_me_app.comments.domain.repositories.CommentRepository
 import com.example.compose_list_me_app.posts.domain.repositories.PostRepository
@@ -18,17 +22,25 @@ interface AppContainer {
     val commentRepository: CommentRepository
 }
 
-class DefaultAppContainer : AppContainer {
+class DefaultAppContainer(context: Context) : AppContainer {
 
     companion object {
-        private const val baseUrl = "https://jsonplaceholder.typicode.com/"
+        private const val BASEURL = "https://jsonplaceholder.typicode.com/"
     }
 
     private val retrofit =
         Retrofit.Builder()
-            .baseUrl(baseUrl)
+            .baseUrl(BASEURL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+
+    private val db by lazy {
+        Room.databaseBuilder(
+            context = context,
+            klass = CommentDatabase::class.java,
+            name = "user_comments.db"
+        ).build()
+    }
 
     private val retrofitUserDatasource: UserRemoteDataSource by lazy {
         retrofit.create(UserRemoteDataSource::class.java)
@@ -37,8 +49,8 @@ class DefaultAppContainer : AppContainer {
         retrofit.create(PostDatasource::class.java)
     }
 
-    private val retrofitCommentDatasource: CommentDatasource by lazy {
-        retrofit.create(CommentDatasource::class.java)
+    private val retrofitCommentDatasource: CommentRemoteDatasource by lazy {
+        retrofit.create(CommentRemoteDatasource::class.java)
     }
 
 
@@ -49,6 +61,9 @@ class DefaultAppContainer : AppContainer {
         PostRepositoryImpl(postDatasource = retrofitPostDatasource)
     }
     override val commentRepository: CommentRepository by lazy {
-        CommentRepositoryImpl(commentDatasource = retrofitCommentDatasource)
+        CommentRepositoryImpl(
+            commentRemoteDatasource = retrofitCommentDatasource,
+            db.commentDao
+        )
     }
 }

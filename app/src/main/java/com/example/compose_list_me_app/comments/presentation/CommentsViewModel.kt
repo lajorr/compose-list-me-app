@@ -74,6 +74,8 @@ class CommentsViewModel(private val commentRepository: CommentRepository) : View
     fun onConfirmDialog() {
         // todo: validate input
         if (validateInput()) {
+            // todo!!: convert input to Comment
+
             // todo: add comment to database
             // todo: room database.....
             onDismissDialog()
