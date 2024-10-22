@@ -2,7 +2,6 @@ package com.example.compose_list_me_app.users.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.LocationOn
@@ -27,32 +25,26 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.compose_list_me_app.R
 import com.example.compose_list_me_app.common.ElevatedCard
 import com.example.compose_list_me_app.common.ErrorText
 import com.example.compose_list_me_app.common.MyAppBar
 import com.example.compose_list_me_app.common.IconText
+import com.example.compose_list_me_app.common.CustomTextField
 import com.example.compose_list_me_app.ui.theme.BackgroundColor
-import com.example.compose_list_me_app.ui.theme.ContainerColor2
 import com.example.compose_list_me_app.ui.theme.PrimaryColor
 import com.example.compose_list_me_app.ui.theme.SecondaryColor
 import com.example.compose_list_me_app.users.domain.models.user.User
@@ -72,26 +64,15 @@ fun UserListScreen(
             MyAppBar(
                 title = stringResource(R.string.users), canPop = false
             )
-            OutlinedTextField(
+            CustomTextField(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
                     .align(Alignment.BottomCenter)
-                    .offset(y = 25.dp)
-                    .shadow(
-                        elevation = 8.dp,
-                        RoundedCornerShape(50),
-                    ),
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedContainerColor = ContainerColor2,
-                    unfocusedBorderColor = Color.Transparent,
-                    focusedContainerColor = ContainerColor2,
-                    focusedBorderColor = PrimaryColor
-                ),
-                shape = RoundedCornerShape(50.dp),
-                leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = "search") },
+                    .padding(horizontal = 20.dp)
+                    .offset(y = 25.dp),
+                onTextChange = viewModel::updateSearchText,
+                inputValue = viewModel.searchText,
                 trailingIcon = {
-                    IconButton(onClick = { viewModel.clearSearchText() }) {
+                    IconButton(onClick = viewModel::clearSearchText) {
                         Icon(
                             Icons.Default.Clear,
                             contentDescription = "clear",
@@ -100,12 +81,9 @@ fun UserListScreen(
                         )
                     }
                 },
-                placeholder = { Text(text = "Search users") },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                maxLines = 1,
+                leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = "search") },
+                hintText = stringResource(R.string.search_users)
 
-                value = viewModel.searchText,
-                onValueChange = viewModel::updateSearchText
             )
         }
         Spacer(modifier = Modifier.height(30.dp))

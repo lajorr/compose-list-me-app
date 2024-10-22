@@ -42,6 +42,16 @@ class PostViewModel(private val postRepository: PostRepository) : ViewModel() {
     var commentUiState: CommentUiState by mutableStateOf(CommentUiState.Loading)
         private set
 
+    var isDialogShown by mutableStateOf(false)
+        private set
+
+    fun onDismissDialog() {
+        isDialogShown = false
+    }
+
+    fun onShowDialog() {
+        isDialogShown = true
+    }
 
     init {
         getAllPosts()

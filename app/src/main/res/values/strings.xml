@@ -8,4 +8,8 @@
     <string name="zip_code">Zip code</string>
     <string name="back">back</string>
     <string name="photos">Photos</string>
+    <string name="search_users">Search Users</string>
+    <string name="email">Email</string>
+    <string name="name">Name</string>
+    <string name="comment">Comment</string>
 </resources>

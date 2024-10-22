@@ -256,7 +256,6 @@ fun Albums(
         }
     }
 
-
 }
 
 @Composable
