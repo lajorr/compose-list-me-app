@@ -23,10 +23,10 @@ import androidx.navigation.toRoute
 import com.example.compose_list_me_app.common.getNavItems
 import com.example.compose_list_me_app.posts.presentations.CommentsScreen
 import com.example.compose_list_me_app.posts.presentations.CommentsScreenObject
+import com.example.compose_list_me_app.posts.presentations.CommentsViewModel
 import com.example.compose_list_me_app.posts.presentations.PostListScreen
 import com.example.compose_list_me_app.posts.presentations.PostViewModel
 import com.example.compose_list_me_app.ui.theme.PrimaryColor
-import com.example.compose_list_me_app.ui.theme.SecondaryColor
 import com.example.compose_list_me_app.users.presentation.AlbumScreen
 import com.example.compose_list_me_app.users.presentation.AlbumScreenParams
 import com.example.compose_list_me_app.users.presentation.UserDetailScreen
@@ -46,16 +46,19 @@ fun ListMeApp() {
 fun NavGraph(navController: NavHostController) {
     val usersVm: UsersViewModel = viewModel(factory = UsersViewModel.Factory)
     val postVm: PostViewModel = viewModel(factory = PostViewModel.Factory)
+    val commentsVm: CommentsViewModel = viewModel(factory = CommentsViewModel.Factory)
     val navVm: NavViewModel = viewModel(factory = NavViewModel.Factory)
     NavHost(navController = navController, startDestination = NavPage) {
 
         composable<NavPage> {
-            NavPage(onUserTap = {
-                navController.navigate(UserDetailScreen(it))
-            },
+            NavPage(
+                onUserTap = {
+                    navController.navigate(UserDetailScreen(it))
+                },
                 onPostTap = { navController.navigate(CommentsScreenObject(it)) },
                 usersVm = usersVm,
                 postVm = postVm,
+
                 navVm = navVm
             )
         }
@@ -83,9 +86,12 @@ fun NavGraph(navController: NavHostController) {
         composable<CommentsScreenObject> {
             val args = it.toRoute<CommentsScreenObject>()
             CommentsScreen(
-                postId = args.postId, onPop = {
+                postId = args.postId,
+                onPop = {
                     navController.popBackStack()
-                }, postViewModel = postVm
+                },
+                commentsViewModel = commentsVm,
+                post = postVm.getPostById(args.postId)
             )
         }
     }

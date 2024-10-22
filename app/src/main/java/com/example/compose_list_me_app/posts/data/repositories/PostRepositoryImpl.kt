@@ -39,19 +39,5 @@ class PostRepositoryImpl(private val postDatasource: PostDatasource) : PostRepos
         }
     }
 
-    override suspend fun fetchCommentsOfPost(postId: Int): List<Comment> {
-        try {
-            var result: List<Comment> = listOf()
-            val response = postDatasource.getCommentsOfPost(postId)
-            if (response.isSuccessful) {
-                response.body()?.let {
-                    result = it
-                }
-            }
-            return result
-        } catch (e: Exception) {
-            throw e
-        }
-    }
 
 }

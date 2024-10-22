@@ -19,12 +19,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -38,10 +35,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import com.example.compose_list_me_app.common.ErrorText
 import com.example.compose_list_me_app.common.MyAppBar
 import com.example.compose_list_me_app.posts.domain.models.Comment
+import com.example.compose_list_me_app.posts.domain.models.Post
 import com.example.compose_list_me_app.ui.theme.BackgroundColor
 import com.example.compose_list_me_app.ui.theme.PrimaryColor
 import com.example.compose_list_me_app.ui.theme.SecondaryColor
@@ -51,20 +48,22 @@ import java.util.Locale
 @Serializable
 data class CommentsScreenObject(val postId: Int)
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommentsScreen(
-    modifier: Modifier = Modifier, postId: Int, onPop: () -> Unit, postViewModel: PostViewModel
-) {
-    val post = postViewModel.getPostById(postId)
+    modifier: Modifier = Modifier,
+    postId: Int,
+    onPop: () -> Unit,
+    commentsViewModel: CommentsViewModel,
+    post: Post
 
+) {
     Scaffold(modifier = Modifier
         .fillMaxSize()
         .background(BackgroundColor),
         topBar = { MyAppBar(title = "Comments", navigateBack = onPop) },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = postViewModel::onShowDialog,
+                onClick = commentsViewModel::onShowDialog,
                 containerColor = PrimaryColor
             ) {
                 Icon(
@@ -107,13 +106,13 @@ fun CommentsScreen(
             Spacer(modifier = Modifier.height(16.dp))
             CommentList(
                 modifier = Modifier.weight(1f),
-                getComments = { postViewModel.getCommentsByPostId(postId) },
-                commentUiState = postViewModel.commentUiState
+                getComments = { commentsViewModel.getCommentsByPostId(postId) },
+                commentUiState = commentsViewModel.commentUiState
             )
 
         }
-        if (postViewModel.isDialogShown)
-            CommentsDialog(onDismiss = postViewModel::onDismissDialog)
+        if (commentsViewModel.isDialogShown)
+            CommentsDialog(onDismiss = commentsViewModel::onDismissDialog)
     }
 }
 

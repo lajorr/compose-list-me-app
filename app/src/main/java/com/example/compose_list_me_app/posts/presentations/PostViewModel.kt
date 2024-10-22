@@ -22,11 +22,7 @@ sealed interface PostUiState {
     data object Loading : PostUiState
 }
 
-sealed interface CommentUiState {
-    data class Success(val postComments: List<Comment>) : CommentUiState
-    data class Error(val message: String) : CommentUiState
-    data object Loading : CommentUiState
-}
+
 
 class PostViewModel(private val postRepository: PostRepository) : ViewModel() {
 
@@ -35,23 +31,7 @@ class PostViewModel(private val postRepository: PostRepository) : ViewModel() {
 
     private var allPostList = mutableStateListOf<Post>()
 
-    // Todo: allComments List
-    // todo: filtered comments .. based on posts
-    // todo: add comments to room database
 
-    var commentUiState: CommentUiState by mutableStateOf(CommentUiState.Loading)
-        private set
-
-    var isDialogShown by mutableStateOf(false)
-        private set
-
-    fun onDismissDialog() {
-        isDialogShown = false
-    }
-
-    fun onShowDialog() {
-        isDialogShown = true
-    }
 
     init {
         getAllPosts()
@@ -80,18 +60,6 @@ class PostViewModel(private val postRepository: PostRepository) : ViewModel() {
         return allPostList.first { it.id == postId }
     }
 
-
-    fun getCommentsByPostId(postId: Int) {
-        commentUiState = CommentUiState.Loading
-        try {
-            viewModelScope.launch {
-                val comments = postRepository.fetchCommentsOfPost(postId)
-                commentUiState = CommentUiState.Success(comments)
-            }
-        } catch (e: Exception) {
-            commentUiState = CommentUiState.Error(message = "Failed to fetch comments..")
-        }
-    }
 
     companion object {
         val Factory = viewModelFactory {
