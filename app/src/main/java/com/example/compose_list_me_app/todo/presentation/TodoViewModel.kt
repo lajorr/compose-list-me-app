@@ -28,7 +28,7 @@ class TodoViewModel(private val todoRepository: TodoRepository) : ViewModel() {
 
 
     fun getTodosByUserId(userId: Int) {
-        Log.i(TAG, "getTodosByUserId: api call")
+        Log.i(TAG, "getTodosByUserId: api callw")
         viewModelScope.launch {
             TodoUiState.Loading
             try {

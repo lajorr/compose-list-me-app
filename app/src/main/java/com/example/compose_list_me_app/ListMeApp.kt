@@ -103,7 +103,8 @@ fun NavGraph(navController: NavHostController) {
             val args = it.toRoute<TodoListScreenObject>()
             TodoListScreen(
                 onPop = { navController.popBackStack() },
-                callTodoApi = { todoVm.getTodosByUserId(args.userId) }
+                callTodoApi = { todoVm.getTodosByUserId(args.userId) },
+                uiState = todoVm.todoUiState
             )
         }
     }

@@ -8,5 +8,4 @@ interface CommentRepository {
 
     suspend fun addComment(comment: Comment)
     suspend fun getLocalCommentsOfPost(postId: Int): List<Comment>
-
 }

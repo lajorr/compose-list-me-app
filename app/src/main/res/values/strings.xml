@@ -12,4 +12,5 @@
     <string name="email">Email</string>
     <string name="name">Name</string>
     <string name="comment">Comment</string>
+    <string name="remote_todos">Remote Todos</string>
 </resources>

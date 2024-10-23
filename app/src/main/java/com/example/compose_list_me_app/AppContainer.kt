@@ -3,12 +3,11 @@ package com.example.compose_list_me_app
 import android.content.Context
 import androidx.room.Room
 import com.example.compose_list_me_app.comments.data.datasource.CommentRemoteDatasource
-import com.example.compose_list_me_app.comments.data.datasource.localDatasource.CommentDatabase
-import com.example.compose_list_me_app.posts.data.datasource.PostDatasource
 import com.example.compose_list_me_app.comments.data.repositories.CommentRepositoryImpl
-import com.example.compose_list_me_app.comments.domain.models.Comment
-import com.example.compose_list_me_app.posts.data.repositories.PostRepositoryImpl
 import com.example.compose_list_me_app.comments.domain.repositories.CommentRepository
+import com.example.compose_list_me_app.database.ListMeDatabase
+import com.example.compose_list_me_app.posts.data.datasource.PostDatasource
+import com.example.compose_list_me_app.posts.data.repositories.PostRepositoryImpl
 import com.example.compose_list_me_app.posts.domain.repositories.PostRepository
 import com.example.compose_list_me_app.todo.data.datasource.TodoRemoteDatasource
 import com.example.compose_list_me_app.todo.data.repositories.TodoRepositoryImpl
@@ -38,7 +37,7 @@ class DefaultAppContainer(context: Context) : AppContainer {
 
     private val db by lazy {
         Room.databaseBuilder(
-            context = context, klass = CommentDatabase::class.java, name = "user_comments.db"
+            context = context, klass = ListMeDatabase::class.java, name = "list_me_database.db"
         ).build()
     }
 
@@ -70,6 +69,9 @@ class DefaultAppContainer(context: Context) : AppContainer {
         )
     }
     override val todoRepository: TodoRepository by lazy {
-        TodoRepositoryImpl(todoRemoteDatasource = retrofitTodoDatasource)
+        TodoRepositoryImpl(
+            todoRemoteDatasource = retrofitTodoDatasource,
+            todoDao = db.todoDao
+        )
     }
 }
