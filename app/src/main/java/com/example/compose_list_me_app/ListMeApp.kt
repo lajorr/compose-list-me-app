@@ -28,6 +28,7 @@ import com.example.compose_list_me_app.posts.presentations.PostListScreen
 import com.example.compose_list_me_app.posts.presentations.PostViewModel
 import com.example.compose_list_me_app.todo.presentation.TodoListScreen
 import com.example.compose_list_me_app.todo.presentation.TodoListScreenObject
+import com.example.compose_list_me_app.todo.presentation.TodoViewModel
 import com.example.compose_list_me_app.ui.theme.PrimaryColor
 import com.example.compose_list_me_app.users.presentation.AlbumScreen
 import com.example.compose_list_me_app.users.presentation.AlbumScreenParams
@@ -50,12 +51,14 @@ fun NavGraph(navController: NavHostController) {
     val postVm: PostViewModel = viewModel(factory = PostViewModel.Factory)
     val commentsVm: CommentsViewModel = viewModel(factory = CommentsViewModel.Factory)
     val navVm: NavViewModel = viewModel(factory = NavViewModel.Factory)
+    val todoVm: TodoViewModel = viewModel(factory = TodoViewModel.Factory)
     NavHost(navController = navController, startDestination = NavPage) {
 
         composable<NavPage> {
-            NavPage(onUserTap = {
-                navController.navigate(UserDetailScreen(it))
-            },
+            NavPage(
+                onUserTap = {
+                    navController.navigate(UserDetailScreen(it))
+                },
                 onPostTap = { navController.navigate(CommentsScreenObject(it)) },
                 usersVm = usersVm,
                 postVm = postVm,
@@ -98,7 +101,10 @@ fun NavGraph(navController: NavHostController) {
 
         composable<TodoListScreenObject> {
             val args = it.toRoute<TodoListScreenObject>()
-            TodoListScreen(userId = args.userId, onPop = { navController.popBackStack() })
+            TodoListScreen(
+                onPop = { navController.popBackStack() },
+                callTodoApi = { todoVm.getTodosByUserId(args.userId) }
+            )
         }
     }
 }

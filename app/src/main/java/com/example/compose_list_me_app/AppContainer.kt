@@ -10,6 +10,9 @@ import com.example.compose_list_me_app.comments.domain.models.Comment
 import com.example.compose_list_me_app.posts.data.repositories.PostRepositoryImpl
 import com.example.compose_list_me_app.comments.domain.repositories.CommentRepository
 import com.example.compose_list_me_app.posts.domain.repositories.PostRepository
+import com.example.compose_list_me_app.todo.data.datasource.TodoRemoteDatasource
+import com.example.compose_list_me_app.todo.data.repositories.TodoRepositoryImpl
+import com.example.compose_list_me_app.todo.domain.repositories.TodoRepository
 import com.example.compose_list_me_app.users.data.datasource.UserRemoteDataSource
 import com.example.compose_list_me_app.users.data.respositories.UserRepositoryImpl
 import com.example.compose_list_me_app.users.domain.repositories.UserRepository
@@ -20,6 +23,7 @@ interface AppContainer {
     val userRepository: UserRepository
     val postRepository: PostRepository
     val commentRepository: CommentRepository
+    val todoRepository: TodoRepository
 }
 
 class DefaultAppContainer(context: Context) : AppContainer {
@@ -29,16 +33,12 @@ class DefaultAppContainer(context: Context) : AppContainer {
     }
 
     private val retrofit =
-        Retrofit.Builder()
-            .baseUrl(BASEURL)
-            .addConverterFactory(GsonConverterFactory.create())
+        Retrofit.Builder().baseUrl(BASEURL).addConverterFactory(GsonConverterFactory.create())
             .build()
 
     private val db by lazy {
         Room.databaseBuilder(
-            context = context,
-            klass = CommentDatabase::class.java,
-            name = "user_comments.db"
+            context = context, klass = CommentDatabase::class.java, name = "user_comments.db"
         ).build()
     }
 
@@ -53,6 +53,10 @@ class DefaultAppContainer(context: Context) : AppContainer {
         retrofit.create(CommentRemoteDatasource::class.java)
     }
 
+    private val retrofitTodoDatasource: TodoRemoteDatasource by lazy {
+        retrofit.create(TodoRemoteDatasource::class.java)
+    }
+
 
     override val userRepository: UserRepository by lazy {
         UserRepositoryImpl(remoteDataSource = retrofitUserDatasource)
@@ -62,8 +66,10 @@ class DefaultAppContainer(context: Context) : AppContainer {
     }
     override val commentRepository: CommentRepository by lazy {
         CommentRepositoryImpl(
-            commentRemoteDatasource = retrofitCommentDatasource,
-            db.commentDao
+            commentRemoteDatasource = retrofitCommentDatasource, db.commentDao
         )
+    }
+    override val todoRepository: TodoRepository by lazy {
+        TodoRepositoryImpl(todoRemoteDatasource = retrofitTodoDatasource)
     }
 }

@@ -11,6 +11,7 @@ import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -30,27 +31,30 @@ data class TodoListScreenObject(val userId: Int)
 @Composable
 fun TodoListScreen(
     modifier: Modifier = Modifier,
-    userId: Int,
     onPop: () -> Unit,
-    viewmodel: TodoViewModel = viewModel(factory = TodoViewModel.Factory)
+    callTodoApi: () -> Unit
 ) {
+
+    LaunchedEffect(Unit) {
+        callTodoApi()
+    }
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
         MyAppBar(
             title = "Todos", navigateBack = onPop
         )
-    }) {
+    }) { innerPaddings ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it)
+                .padding(innerPaddings)
                 .padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(2) {
                 // todo: nope!!
-                var isChecked = remember {
+                val isChecked = remember {
                     mutableStateOf(false)
-                }
+                };
                 ElevatedCard {
                     Row(
                         modifier = Modifier
@@ -61,7 +65,7 @@ fun TodoListScreen(
                         Checkbox(
                             checked = isChecked.value,
                             onCheckedChange = { isChecked.value = it },
-//                            enabled = false,
+//                            enabled = false, todo: disable if remote list
                             colors = CheckboxDefaults.colors(
                                 uncheckedColor = PrimaryColor,
                                 checkedColor = PrimaryColor,

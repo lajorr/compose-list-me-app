@@ -27,11 +27,6 @@ class CommentsViewModel(
     private val commentRepository: CommentRepository,
 ) : ViewModel() {
 
-
-    // Todo: allComments List
-    // todo: filtered comments .. based on posts
-    // todo: add comments to room database
-
     var commentUiState: CommentUiState by mutableStateOf(CommentUiState.Loading)
         private set
 
