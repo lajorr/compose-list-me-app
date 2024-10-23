@@ -1,6 +1,5 @@
 package com.example.compose_list_me_app.users.presentation
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -72,7 +71,8 @@ fun UserDetailScreen(
     onAlbumTap: (Int) -> Unit,
     userId: Int,
     postList: List<Post>,
-    navigateCommentsScreen: (Int) -> Unit
+    onNavigateCommentsScreen: (Int) -> Unit,
+    onNavigateToTodo: (Int) -> Unit
 ) {
     LaunchedEffect(Unit) {
         userViewModel.getUser(id = userId)
@@ -139,7 +139,7 @@ fun UserDetailScreen(
                             .height(32.dp)
                             .padding(end = 12.dp)
                             .clickable {
-                                Log.i("TODOO", "UserDetailScreen: todos")
+                                onNavigateToTodo(userId)
                             },
                     )
                 }
@@ -199,7 +199,6 @@ fun UserDetailScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-//                        .weight(1f)
                         .background(Color.White)
                         .padding(16.dp)
                 ) {
@@ -209,7 +208,7 @@ fun UserDetailScreen(
                         onAlbumTap = onAlbumTap
                     )
                     Spacer(modifier = Modifier.height(24.dp))
-                    Posts(posts = postList, onPostTap = navigateCommentsScreen)
+                    Posts(posts = postList, onPostTap = onNavigateCommentsScreen)
 
                 }
             }
@@ -290,10 +289,7 @@ fun Posts(modifier: Modifier = Modifier, posts: List<Post>, onPostTap: (Int) -> 
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             posts.forEachIndexed { index, post ->
                 PostTile(
-                    post = post,
-                    index = index,
-                    bgColor = BackgroundColor,
-                    onTap = onPostTap
+                    post = post, index = index, bgColor = BackgroundColor, onTap = onPostTap
                 )
             }
         }

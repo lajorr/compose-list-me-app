@@ -26,6 +26,8 @@ import com.example.compose_list_me_app.comments.presentation.CommentsScreenObjec
 import com.example.compose_list_me_app.comments.presentation.CommentsViewModel
 import com.example.compose_list_me_app.posts.presentations.PostListScreen
 import com.example.compose_list_me_app.posts.presentations.PostViewModel
+import com.example.compose_list_me_app.todo.presentation.TodoListScreen
+import com.example.compose_list_me_app.todo.presentation.TodoListScreenObject
 import com.example.compose_list_me_app.ui.theme.PrimaryColor
 import com.example.compose_list_me_app.users.presentation.AlbumScreen
 import com.example.compose_list_me_app.users.presentation.AlbumScreenParams
@@ -51,10 +53,9 @@ fun NavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = NavPage) {
 
         composable<NavPage> {
-            NavPage(
-                onUserTap = {
-                    navController.navigate(UserDetailScreen(it))
-                },
+            NavPage(onUserTap = {
+                navController.navigate(UserDetailScreen(it))
+            },
                 onPostTap = { navController.navigate(CommentsScreenObject(it)) },
                 usersVm = usersVm,
                 postVm = postVm,
@@ -69,12 +70,15 @@ fun NavGraph(navController: NavHostController) {
                 userId = args.id,
                 onAlbumTap = { albumId -> navController.navigate(AlbumScreenParams(albumId)) },
                 postList = postVm.getUserPosts(args.id),
-                navigateCommentsScreen = { postId ->
+                onNavigateCommentsScreen = { postId ->
                     navController.navigate(
                         CommentsScreenObject(
                             postId
                         )
                     )
+                },
+                onNavigateToTodo = { userId ->
+                    navController.navigate(TodoListScreenObject(userId))
                 })
         }
         composable<AlbumScreenParams> {
@@ -88,10 +92,13 @@ fun NavGraph(navController: NavHostController) {
             CommentsScreen(
                 onPop = {
                     navController.popBackStack()
-                },
-                commentsViewModel = commentsVm,
-                post = postVm.getPostById(args.postId)
+                }, commentsViewModel = commentsVm, post = postVm.getPostById(args.postId)
             )
+        }
+
+        composable<TodoListScreenObject> {
+            val args = it.toRoute<TodoListScreenObject>()
+            TodoListScreen(userId = args.userId, onPop = { navController.popBackStack() })
         }
     }
 }
