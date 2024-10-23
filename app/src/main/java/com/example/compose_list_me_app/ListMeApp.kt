@@ -11,6 +11,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -101,10 +102,21 @@ fun NavGraph(navController: NavHostController) {
 
         composable<TodoListScreenObject> {
             val args = it.toRoute<TodoListScreenObject>()
+
             TodoListScreen(
                 onPop = { navController.popBackStack() },
-                callTodoApi = { todoVm.getTodosByUserId(args.userId) },
-                uiState = todoVm.todoUiState
+                callTodoApi = {
+                    todoVm.getTodosByUserId(args.userId)
+
+                },
+                uiState = todoVm.todoUiState.collectAsState().value,
+                showBottomSheet = todoVm.showBottomSheet.collectAsState().value,
+                onDismiss = todoVm::toggleBottomSheetState,
+                onSaved = { todoVm.addTodo(args.userId) },
+                isEditMode = false,
+                onToggleSheet = todoVm::toggleBottomSheetState,
+                inputValue = todoVm.todoInputController.collectAsState().value,
+                onInputChange = todoVm::onTextChange,
             )
         }
     }

@@ -13,4 +13,9 @@
     <string name="name">Name</string>
     <string name="comment">Comment</string>
     <string name="remote_todos">Remote Todos</string>
+    <string name="local_todos">Local Todos</string>
+    <string name="no_todos_found">No todos found</string>
+    <string name="edit">Edit</string>
+    <string name="add">Add</string>
+    <string name="todo">Todo</string>
 </resources>

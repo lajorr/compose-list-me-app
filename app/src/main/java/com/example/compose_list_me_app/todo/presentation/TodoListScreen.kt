@@ -11,16 +11,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
@@ -38,7 +41,18 @@ data class TodoListScreenObject(val userId: Int)
 
 @Composable
 fun TodoListScreen(
-    modifier: Modifier = Modifier, onPop: () -> Unit, callTodoApi: () -> Unit, uiState: TodoUiState
+    modifier: Modifier = Modifier,
+    onPop: () -> Unit,
+    callTodoApi: () -> Unit,
+    uiState: TodoUiState,
+    showBottomSheet: Boolean,
+    onDismiss: () -> Unit,
+    inputValue: String,
+    onInputChange: (String) -> Unit = {},
+    onSaved: () -> Unit,
+    isEditMode: Boolean = false,
+    onToggleSheet: () -> Unit,
+
 ) {
     LaunchedEffect(Unit) {
         callTodoApi()
@@ -47,7 +61,22 @@ fun TodoListScreen(
         MyAppBar(
             title = "Todos", navigateBack = onPop
         )
+    }, floatingActionButton = {
+        FloatingActionButton(onClick = {
+            onToggleSheet()
+        }) {
+            Icon(
+                Icons.Default.Create, contentDescription = "Add Todo"
+            )
+        }
     }) { innerPaddings ->
+        if (showBottomSheet) TodoBottomSheet(
+            onDismiss = onDismiss,
+            onInputChange = onInputChange,
+            onSaved = onSaved,
+            inputText = inputValue,
+            isEditMode = false
+        )
         Column(
             modifier = Modifier
                 .padding(innerPaddings)
@@ -60,7 +89,9 @@ fun TodoListScreen(
                 is TodoUiState.Error -> ErrorText(uiState.message)
                 TodoUiState.Loading -> CircularProgressIndicator()
                 is TodoUiState.Success -> SuccessUI(
-                    todoList = uiState.todoList, modifier = Modifier.weight(1f)
+                    remoteTodos = uiState.remoteTodos,
+                    modifier = Modifier.weight(1f),
+                    localTodos = uiState.localTodos
                 )
             }
         }
@@ -68,12 +99,24 @@ fun TodoListScreen(
 }
 
 @Composable
-fun SuccessUI(modifier: Modifier = Modifier, todoList: List<Todo>) {
+fun SuccessUI(
+    modifier: Modifier = Modifier, remoteTodos: List<Todo>, localTodos: List<Todo>
+) {
     val scrollState = rememberScrollState()
 
     Column(modifier = modifier.verticalScroll(scrollState)) {
+        if (remoteTodos.isEmpty() && localTodos.isEmpty()) {
+            Text(
+                text = stringResource(R.string.no_todos_found), fontSize = 16.sp
+            )
+            return
+        }
         TodoList(
-            todoList = todoList,
+            todoList = localTodos,
+            sourceName = stringResource(R.string.local_todos),
+        )
+        TodoList(
+            todoList = remoteTodos,
             sourceName = stringResource(R.string.remote_todos),
         )
     }
@@ -81,12 +124,9 @@ fun SuccessUI(modifier: Modifier = Modifier, todoList: List<Todo>) {
 
 @Composable
 fun TodoList(modifier: Modifier = Modifier, todoList: List<Todo>, sourceName: String) {
-    Column(modifier = modifier) {
+    if (todoList.isNotEmpty()) Column(modifier = modifier) {
         Text(
-            sourceName,
-            fontSize = 16.sp,
-            color = PrimaryColor,
-            fontStyle = FontStyle.Italic
+            sourceName, fontSize = 16.sp, color = PrimaryColor, fontStyle = FontStyle.Italic
         )
         Spacer(modifier = Modifier.height(4.dp))
         todoList.forEach { todo ->

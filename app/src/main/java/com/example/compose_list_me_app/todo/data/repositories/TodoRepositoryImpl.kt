@@ -5,21 +5,19 @@ import com.example.compose_list_me_app.todo.data.datasource.todo_local_datasourc
 import com.example.compose_list_me_app.todo.domain.models.Todo
 import com.example.compose_list_me_app.todo.domain.repositories.TodoRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class TodoRepositoryImpl(
-    private val todoRemoteDatasource: TodoRemoteDatasource,
-    private val todoDao: TodoDao
+    private val todoRemoteDatasource: TodoRemoteDatasource, private val todoDao: TodoDao
 ) : TodoRepository {
-    override suspend fun fetchUserTodos(userId: Int): List<Todo> {
+    override fun fetchUserTodos(userId: Int): Flow<List<Todo>> = flow {
         try {
-            var result = emptyList<Todo>()
             val response = todoRemoteDatasource.getUserTodos(userId)
             if (response.isSuccessful) {
                 response.body()?.let {
-                    result = it
+                    emit(it)
                 }
             }
-            return result
         } catch (e: Exception) {
             throw e
         }
@@ -31,5 +29,7 @@ class TodoRepositoryImpl(
 
     override suspend fun updateTodo(todo: Todo) = todoDao.updateTodo(todo)
 
-    override fun getAllTodos(): Flow<List<Todo>> = todoDao.getAllTodos()
+
+    override fun fetchLocalUserTodos(userId: Int): Flow<List<Todo>> =
+        todoDao.getUserTodos(userId)
 }

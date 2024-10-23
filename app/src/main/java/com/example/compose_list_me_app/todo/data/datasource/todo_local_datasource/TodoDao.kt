@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TodoDao {
-    @Query("SELECT * FROM todo")
-    fun getAllTodos(): Flow<List<Todo>>
+    @Query("SELECT * FROM todo WHERE userId = :userId")
+    fun getUserTodos(userId: Int): Flow<List<Todo>>
 
     @Insert
     suspend fun addTodo(todo: Todo)
