@@ -4,8 +4,8 @@ import com.example.compose_list_me_app.comments.domain.models.Comment
 import kotlinx.coroutines.flow.Flow
 
 interface CommentRepository {
-    suspend fun fetchCommentsOfPost(postId: Int): List<Comment>
+    fun fetchCommentsOfPost(postId: Int): Flow<List<Comment>>
 
     suspend fun addComment(comment: Comment)
-    suspend fun getLocalCommentsOfPost(postId: Int): List<Comment>
+    suspend fun getLocalCommentsOfPost(postId: Int): Flow<List<Comment>>
 }

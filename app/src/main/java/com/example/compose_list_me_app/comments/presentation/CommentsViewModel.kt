@@ -11,6 +11,13 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.compose_list_me_app.ListMeApplication
 import com.example.compose_list_me_app.comments.domain.models.Comment
 import com.example.compose_list_me_app.comments.domain.repositories.CommentRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Date
 
@@ -27,8 +34,6 @@ class CommentsViewModel(
     private val commentRepository: CommentRepository,
 ) : ViewModel() {
 
-    var commentUiState: CommentUiState by mutableStateOf(CommentUiState.Loading)
-        private set
 
     var isDialogShown by mutableStateOf(false)
         private set
@@ -121,7 +126,6 @@ class CommentsViewModel(
         isDialogShown = true
     }
 
-
     fun onNameChange(newValue: String) {
         nameController = newValue
     }
@@ -130,22 +134,51 @@ class CommentsViewModel(
         commentController = newValue
     }
 
+    private val _remoteComments = MutableStateFlow<List<Comment>>(emptyList())
+    private val remoteComments = _remoteComments.asStateFlow()
 
-    fun getCommentsByPostId(postId: Int) {
-        commentUiState = CommentUiState.Loading
+    private val _localComments = MutableStateFlow<List<Comment>>(emptyList())
+    private val localComments = _localComments.asStateFlow()
 
-        try {
-            viewModelScope.launch {
-                val remoteComments = commentRepository.fetchCommentsOfPost(postId)
-                val localComments = commentRepository.getLocalCommentsOfPost(postId).reversed()
-                val comments = localComments + remoteComments
-                commentUiState = CommentUiState.Success(comments)
+    val commentUiState: StateFlow<CommentUiState> =
+        combine(localComments, remoteComments) { local, remote ->
+            val comments = local.reversed() + remote
+            if (comments.isNotEmpty()) {
+                CommentUiState.Success(postComments = comments)
+            } else {
+                CommentUiState.Loading
             }
-        } catch (e: Exception) {
-            commentUiState = CommentUiState.Error(message = "Failed to fetch comments..")
+        }.stateIn(
+            scope = viewModelScope,
+            initialValue = CommentUiState.Loading,
+            started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000L)
+        )
+
+    private fun getRemoteComments(postId: Int) {
+        viewModelScope.launch {
+            commentRepository.fetchCommentsOfPost(postId).catch {
+                throw it
+            }.collectLatest { comments ->
+                _remoteComments.value = comments
+            }
         }
     }
 
+    private fun getLocalComments(postId: Int) {
+        viewModelScope.launch {
+            commentRepository.getLocalCommentsOfPost(postId).catch {
+                throw it
+            }.collectLatest { comments ->
+                _localComments.value = comments
+            }
+
+        }
+    }
+
+    fun getCommentsByPostId(postId: Int) {
+        getRemoteComments(postId)
+        getLocalComments(postId)
+    }
 
     companion object {
         val Factory = viewModelFactory {
@@ -157,6 +190,4 @@ class CommentsViewModel(
             }
         }
     }
-
-
 }
