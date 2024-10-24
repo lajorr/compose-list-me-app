@@ -27,6 +27,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -98,7 +99,7 @@ fun UserListScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            when (val uiState = viewModel.userListState) {
+            when (val uiState = viewModel.userListState.collectAsState().value) {
                 is UserUiState.Error -> ErrorText(message = uiState.message)
                 UserUiState.Loading -> CircularProgressIndicator()
                 is UserUiState.Success -> SuccessUi(

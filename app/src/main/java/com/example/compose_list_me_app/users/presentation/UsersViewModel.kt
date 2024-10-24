@@ -13,6 +13,12 @@ import com.example.compose_list_me_app.users.domain.models.album.Album
 import com.example.compose_list_me_app.users.domain.models.photo.Photo
 import com.example.compose_list_me_app.users.domain.models.user.User
 import com.example.compose_list_me_app.users.domain.repositories.UserRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 
@@ -34,7 +40,7 @@ sealed interface PhotoUiState {
     data class Error(val message: String) : PhotoUiState
 }
 
-data class UserDetailsState(val user: User?)
+data class UserDetailsState(val user: User)
 
 
 class UsersViewModel(
@@ -44,67 +50,60 @@ class UsersViewModel(
     var searchText by mutableStateOf("")
         private set
 
-    var userListState: UserUiState by mutableStateOf(UserUiState.Loading)
+    val userListState: StateFlow<UserUiState> = userRepository.fetchAllUsers().catch {
+        UserUiState.Error(message = "Failed to fetch data")
+    }.mapNotNull {
+        UserUiState.Success(it)
+    }.stateIn(
+        scope = viewModelScope,
+        initialValue = UserUiState.Loading,
+        started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000L)
+    )
+
+    var userDetailState = MutableStateFlow<UserDetailsState?>(null)
+
     var albumListState: AlbumUiState by mutableStateOf(AlbumUiState.Loading)
     var photoListState: PhotoUiState by mutableStateOf(PhotoUiState.Loading)
 
     private lateinit var _userList: List<User>
 
-    init {
-        getUsersList()
-    }
-
-
-    private fun getUsersList() {
-        userListState = UserUiState.Loading
-        viewModelScope.launch {
-            try {
-                val data = userRepository.fetchAllUsers()
-                _userList = data
-                userListState = UserUiState.Success(data)
-
-            } catch (e: Exception) {
-                userListState = UserUiState.Error(message = "Failed to fetch data")
-            }
-        }
-
-    }
 
     fun clearSearchText() {
         searchText = ""
-        searchUsers()
+//        searchUsers()
     }
 
 
     fun updateSearchText(text: String) {
         searchText = text
-        searchUsers()
+//        searchUsers()
     }
 
-    private fun searchUsers() {
-        userListState = UserUiState.Loading
-        try {
-
-            val filteredUsers = _userList.filter { user ->
-                user.name.lowercase().contains(searchText.lowercase())
-            }
-            userListState = UserUiState.Success(filteredUsers)
-
-        } catch (e: Exception) {
-            userListState = UserUiState.Error(message = "No Result")
-        }
-
-    }
-
-    var userDetailState: UserDetailsState by mutableStateOf(UserDetailsState(user = null))
-        private set
+//    private fun searchUsers() {
+//        userListState = UserUiState.Loading
+//        try {
+//
+//            val filteredUsers = _userList.filter { user ->
+//                user.name.lowercase().contains(searchText.lowercase())
+//            }
+//            userListState = UserUiState.Success(filteredUsers)
+//
+//        } catch (e: Exception) {
+//            userListState = UserUiState.Error(message = "No Result")
+//        }
+//
+//    }
 
 
     fun getUser(id: Int) {
-        val user = _userList.first { user ->
-            user.id == id
+        val user = userListState.value.let { state ->
+            if (state is UserUiState.Success) {
+                state.usersList.find { it.id == id }
+            } else {
+                null
+            }
         }
-        userDetailState = UserDetailsState(user = user)
+        userDetailState.value = UserDetailsState(user = user!!)
     }
 
     fun getAllUserAlbums(userId: Int) {

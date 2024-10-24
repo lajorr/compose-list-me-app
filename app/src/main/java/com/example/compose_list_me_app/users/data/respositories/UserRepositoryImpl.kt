@@ -7,28 +7,25 @@ import com.example.compose_list_me_app.users.domain.models.album.Album
 import com.example.compose_list_me_app.users.domain.models.photo.Photo
 import com.example.compose_list_me_app.users.domain.models.user.User
 import com.example.compose_list_me_app.users.domain.repositories.UserRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.io.IOException
 
 class UserRepositoryImpl(
     private val remoteDataSource: UserRemoteDataSource,
-    private val ctx: Context
 ) :
     UserRepository {
-    override suspend fun fetchAllUsers(): List<User> {
+    override fun fetchAllUsers(): Flow<List<User>> = flow {
         try {
-
-            var result = listOf<User>()
             val response = remoteDataSource.getAllUsers()
             if (response.isSuccessful) {
                 response.body()?.let { userList ->
-                    result = userList.map { user ->
+                    emit(userList.map { user ->
                         user.imageUrl = "https://cdn-icons-png.flaticon.com/512/149/149071.png"
                         user
-                    }
+                    })
                 }
             }
-            return result
-
         } catch (e: IOException) {
             Log.e("UserRepo", "fetchAllUsers: Failed Fetching data")
             throw e

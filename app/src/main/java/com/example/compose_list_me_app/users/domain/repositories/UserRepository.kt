@@ -6,7 +6,7 @@ import com.example.compose_list_me_app.users.domain.models.user.User
 import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
-    suspend fun fetchAllUsers(): List<User>
+    fun fetchAllUsers(): Flow<List<User>>
     suspend fun fetchUserAlbums(userId: Int): List<Album>
     suspend fun fetchAlbumPhotos(albumId: Int): List<Photo>
 }

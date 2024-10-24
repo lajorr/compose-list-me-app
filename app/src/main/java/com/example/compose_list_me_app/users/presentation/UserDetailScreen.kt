@@ -32,6 +32,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -79,7 +80,9 @@ fun UserDetailScreen(
     }
 
     val scrollState = rememberScrollState()
-    val userData = userViewModel.userDetailState.user
+    val userData = userViewModel
+        .userDetailState
+        .collectAsState().value?.user
 
     // for some reason i can press back btn multiple times...
     var backBtnState by remember {

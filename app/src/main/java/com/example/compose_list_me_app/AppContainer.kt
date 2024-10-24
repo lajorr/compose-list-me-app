@@ -58,7 +58,7 @@ class DefaultAppContainer(context: Context) : AppContainer {
 
 
     override val userRepository: UserRepository by lazy {
-        UserRepositoryImpl(remoteDataSource = retrofitUserDatasource, context)
+        UserRepositoryImpl(remoteDataSource = retrofitUserDatasource)
     }
     override val postRepository: PostRepository by lazy {
         PostRepositoryImpl(postDatasource = retrofitPostDatasource)
