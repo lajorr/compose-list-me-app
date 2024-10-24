@@ -43,7 +43,6 @@ class CommentsViewModel(
     var nameErrorText: String? by mutableStateOf(null)
         private set
 
-
     var commentErrorText: String? by mutableStateOf(null)
         private set
 

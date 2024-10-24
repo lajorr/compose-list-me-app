@@ -74,7 +74,7 @@ fun UserListScreen(
                     .padding(horizontal = 20.dp)
                     .offset(y = 25.dp),
                 onTextChange = viewModel::updateSearchText,
-                textController = viewModel.searchText,
+                textController = viewModel.searchQuery.collectAsState().value,
                 trailingIcon = {
                     IconButton(onClick = viewModel::clearSearchText) {
                         Icon(
@@ -99,7 +99,7 @@ fun UserListScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            when (val uiState = viewModel.userListState.collectAsState().value) {
+            when (val uiState = viewModel.userUiState.collectAsState().value) {
                 is UserUiState.Error -> ErrorText(message = uiState.message)
                 UserUiState.Loading -> CircularProgressIndicator()
                 is UserUiState.Success -> SuccessUi(

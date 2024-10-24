@@ -14,8 +14,11 @@ import com.example.compose_list_me_app.users.domain.models.photo.Photo
 import com.example.compose_list_me_app.users.domain.models.user.User
 import com.example.compose_list_me_app.users.domain.repositories.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.stateIn
@@ -47,63 +50,61 @@ class UsersViewModel(
     private val userRepository: UserRepository,
 ) : ViewModel() {
 
-    var searchText by mutableStateOf("")
-        private set
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery = _searchQuery.asStateFlow()
 
-    val userListState: StateFlow<UserUiState> = userRepository.fetchAllUsers().catch {
+
+    private val userList: StateFlow<List<User>> = userRepository.fetchAllUsers().catch {
         UserUiState.Error(message = "Failed to fetch data")
-    }.mapNotNull {
-        UserUiState.Success(it)
+    }.stateIn(
+        scope = viewModelScope,
+        initialValue = emptyList(),
+        started = SharingStarted.WhileSubscribed(5000L)
+    )
+
+    val userUiState: StateFlow<UserUiState> = combine(userList, searchQuery) { users, query ->
+        val filteredUsers = if (query.isNotEmpty()) {
+            users.filter {
+                it.name.contains(query, ignoreCase = true)
+            }
+        } else {
+            users
+        }
+        filteredUsers
+    }.map {
+        UserUiState.Success(usersList = it)
+    }.catch {
+        UserUiState.Error(message = "Failed to fetch data")
     }.stateIn(
         scope = viewModelScope,
         initialValue = UserUiState.Loading,
-        started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000L)
+        started = SharingStarted.WhileSubscribed(5000L)
     )
 
-    var userDetailState = MutableStateFlow<UserDetailsState?>(null)
-
+    private val _userDetailState = MutableStateFlow<UserDetailsState?>(null)
+    var userDetailState = _userDetailState.asStateFlow()
     var albumListState: AlbumUiState by mutableStateOf(AlbumUiState.Loading)
     var photoListState: PhotoUiState by mutableStateOf(PhotoUiState.Loading)
 
-    private lateinit var _userList: List<User>
-
 
     fun clearSearchText() {
-        searchText = ""
-//        searchUsers()
+        _searchQuery.value = ""
     }
-
 
     fun updateSearchText(text: String) {
-        searchText = text
-//        searchUsers()
+        _searchQuery.value = text
     }
-
-//    private fun searchUsers() {
-//        userListState = UserUiState.Loading
-//        try {
-//
-//            val filteredUsers = _userList.filter { user ->
-//                user.name.lowercase().contains(searchText.lowercase())
-//            }
-//            userListState = UserUiState.Success(filteredUsers)
-//
-//        } catch (e: Exception) {
-//            userListState = UserUiState.Error(message = "No Result")
-//        }
-//
-//    }
 
 
     fun getUser(id: Int) {
-        val user = userListState.value.let { state ->
+        val user = userUiState.value.let { state ->
             if (state is UserUiState.Success) {
                 state.usersList.find { it.id == id }
             } else {
                 null
             }
         }
-        userDetailState.value = UserDetailsState(user = user!!)
+        _userDetailState.value = UserDetailsState(user = user!!)
     }
 
     fun getAllUserAlbums(userId: Int) {
