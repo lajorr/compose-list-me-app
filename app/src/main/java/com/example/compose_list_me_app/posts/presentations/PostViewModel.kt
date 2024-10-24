@@ -12,6 +12,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.compose_list_me_app.ListMeApplication
 import com.example.compose_list_me_app.posts.domain.models.Post
 import com.example.compose_list_me_app.posts.domain.repositories.PostRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
@@ -22,14 +23,12 @@ sealed interface PostUiState {
 }
 
 
-
 class PostViewModel(private val postRepository: PostRepository) : ViewModel() {
 
     var postUiState: PostUiState by mutableStateOf(PostUiState.Loading)
         private set
 
     private var allPostList = mutableStateListOf<Post>()
-
 
 
     init {
@@ -39,14 +38,15 @@ class PostViewModel(private val postRepository: PostRepository) : ViewModel() {
     private fun getAllPosts() {
         PostUiState.Loading
         allPostList.clear()
-        try {
-            viewModelScope.launch {
+        viewModelScope.launch() {
+            try {
                 val posts = postRepository.fetchAllPosts()
                 allPostList.addAll(posts)
                 postUiState = PostUiState.Success(posts)
+
+            } catch (e: Exception) {
+                postUiState = PostUiState.Error("Failed to Fetch Posts")
             }
-        } catch (e: Exception) {
-            postUiState = PostUiState.Error("Failed to Fetch Posts")
         }
     }
 

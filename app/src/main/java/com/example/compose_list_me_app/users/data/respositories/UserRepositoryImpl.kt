@@ -1,15 +1,22 @@
 package com.example.compose_list_me_app.users.data.respositories
 
+import android.content.Context
 import android.util.Log
 import com.example.compose_list_me_app.users.data.datasource.UserRemoteDataSource
 import com.example.compose_list_me_app.users.domain.models.album.Album
 import com.example.compose_list_me_app.users.domain.models.photo.Photo
 import com.example.compose_list_me_app.users.domain.models.user.User
 import com.example.compose_list_me_app.users.domain.repositories.UserRepository
+import java.io.IOException
 
-class UserRepositoryImpl(private val remoteDataSource: UserRemoteDataSource) : UserRepository {
+class UserRepositoryImpl(
+    private val remoteDataSource: UserRemoteDataSource,
+    private val ctx: Context
+) :
+    UserRepository {
     override suspend fun fetchAllUsers(): List<User> {
         try {
+
             var result = listOf<User>()
             val response = remoteDataSource.getAllUsers()
             if (response.isSuccessful) {
@@ -22,7 +29,7 @@ class UserRepositoryImpl(private val remoteDataSource: UserRemoteDataSource) : U
             }
             return result
 
-        } catch (e: Exception) {
+        } catch (e: IOException) {
             Log.e("UserRepo", "fetchAllUsers: Failed Fetching data")
             throw e
         }

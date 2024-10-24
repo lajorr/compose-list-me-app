@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.compose_list_me_app.R
 import com.example.compose_list_me_app.common.composables.ElevatedCard
@@ -51,7 +52,9 @@ import com.example.compose_list_me_app.users.domain.models.user.User
 
 @Composable
 fun UserListScreen(
-    modifier: Modifier = Modifier, viewModel: UsersViewModel, onUserTap: (Int) -> Unit
+    modifier: Modifier = Modifier,
+    viewModel: UsersViewModel = viewModel(factory = UsersViewModel.Factory),
+    onUserTap: (Int) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -103,7 +106,6 @@ fun UserListScreen(
                 )
             }
         }
-
     }
 }
 

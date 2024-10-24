@@ -1,6 +1,7 @@
 package com.example.compose_list_me_app
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -50,9 +51,6 @@ fun ListMeApp() {
 fun NavGraph(navController: NavHostController) {
     val usersVm: UsersViewModel = viewModel(factory = UsersViewModel.Factory)
     val postVm: PostViewModel = viewModel(factory = PostViewModel.Factory)
-    val commentsVm: CommentsViewModel = viewModel(factory = CommentsViewModel.Factory)
-    val navVm: NavViewModel = viewModel(factory = NavViewModel.Factory)
-    val todoVm: TodoViewModel = viewModel(factory = TodoViewModel.Factory)
     NavHost(navController = navController, startDestination = NavPage) {
 
         composable<NavPage> {
@@ -63,8 +61,6 @@ fun NavGraph(navController: NavHostController) {
                 onPostTap = { navController.navigate(CommentsScreenObject(it)) },
                 usersVm = usersVm,
                 postVm = postVm,
-
-                navVm = navVm
             )
         }
         composable<UserDetailScreen> {
@@ -96,13 +92,13 @@ fun NavGraph(navController: NavHostController) {
             CommentsScreen(
                 onPop = {
                     navController.popBackStack()
-                }, commentsViewModel = commentsVm, post = postVm.getPostById(args.postId)
+                }, post = postVm.getPostById(args.postId)
             )
         }
 
         composable<TodoListScreenObject> {
             val args = it.toRoute<TodoListScreenObject>()
-
+            val todoVm = viewModel<TodoViewModel>(factory = TodoViewModel.Factory)
             TodoListScreen(
                 onPop = { navController.popBackStack() },
                 callTodoApi = {
@@ -133,7 +129,7 @@ fun NavPage(
     onPostTap: (Int) -> Unit,
     usersVm: UsersViewModel,
     postVm: PostViewModel,
-    navVm: NavViewModel
+    navVm: NavViewModel = viewModel(factory = NavViewModel.Factory)
 ) {
 
     val context = LocalContext.current
@@ -167,11 +163,12 @@ fun NavPage(
 
             )
 
-            1 -> PostListScreen(
-                modifier = modifier.padding(
-                    bottom = it.calculateBottomPadding()
-                ), navigateCommentsScreen = onPostTap, viewModel = postVm
-            )
+            1 ->
+                PostListScreen(
+                    modifier = modifier.padding(
+                        bottom = it.calculateBottomPadding()
+                    ), navigateCommentsScreen = onPostTap, viewModel = postVm
+                )
         }
     }
 }

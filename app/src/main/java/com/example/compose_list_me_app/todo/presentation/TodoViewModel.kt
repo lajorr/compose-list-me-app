@@ -36,9 +36,15 @@ class TodoViewModel(private val todoRepository: TodoRepository) : ViewModel() {
     private val _localTodoList = MutableStateFlow<List<Todo>>(emptyList())
     private val localTodoList: StateFlow<List<Todo>> = _localTodoList.asStateFlow()
 
+    private var _errorState = MutableStateFlow<String?>(null)
+    private val errorState = _errorState.asStateFlow()
     val todoUiState: StateFlow<TodoUiState> =
-        combine(remoteTodoList, localTodoList) { remoteTodos, localTodos ->
-            TodoUiState.Success(remoteTodos = remoteTodos, localTodos = localTodos)
+        combine(remoteTodoList, localTodoList, errorState) { remoteTodos, localTodos, error ->
+            if (error != null) {
+                TodoUiState.Error(message = error)
+            } else {
+                TodoUiState.Success(remoteTodos = remoteTodos, localTodos = localTodos)
+            }
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),
@@ -54,16 +60,16 @@ class TodoViewModel(private val todoRepository: TodoRepository) : ViewModel() {
 
     fun getTodosByUserId(userId: Int) {
         viewModelScope.launch {
-            TodoUiState.Loading
             try {
-                todoRepository.fetchLocalUserTodos(userId).collectLatest {
-                    _localTodoList.value = it
-                }
                 todoRepository.fetchUserTodos(userId).collectLatest {
                     _remoteTodoList.value = it
                 }
+                todoRepository.fetchLocalUserTodos(userId).collectLatest {
+                    _localTodoList.value = it
+                }
+
             } catch (e: Exception) {
-                TodoUiState.Error(message = "Failed to fetch todos")
+                _errorState.value = e.message
             }
         }
     }
@@ -95,7 +101,14 @@ class TodoViewModel(private val todoRepository: TodoRepository) : ViewModel() {
             toggleBottomSheetState()
             getTodosByUserId(userId)
         }
+    }
 
+    fun updateTodo(todo: Todo) {
+        viewModelScope.launch {
+            todoRepository.updateTodo(todo)
+            toggleBottomSheetState()
+            getTodosByUserId(todo.userId)
+        }
     }
 
 

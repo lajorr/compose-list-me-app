@@ -53,7 +53,7 @@ fun TodoListScreen(
     isEditMode: Boolean = false,
     onToggleSheet: () -> Unit,
 
-) {
+    ) {
     LaunchedEffect(Unit) {
         callTodoApi()
     }
@@ -118,12 +118,18 @@ fun SuccessUI(
         TodoList(
             todoList = remoteTodos,
             sourceName = stringResource(R.string.remote_todos),
+//            isCheckboxEnabled = false
         )
     }
 }
 
 @Composable
-fun TodoList(modifier: Modifier = Modifier, todoList: List<Todo>, sourceName: String) {
+fun TodoList(
+    modifier: Modifier = Modifier,
+    todoList: List<Todo>,
+    sourceName: String,
+    isCheckboxEnabled: Boolean = true
+) {
     if (todoList.isNotEmpty()) Column(modifier = modifier) {
         Text(
             sourceName, fontSize = 16.sp, color = PrimaryColor, fontStyle = FontStyle.Italic
@@ -141,7 +147,7 @@ fun TodoList(modifier: Modifier = Modifier, todoList: List<Todo>, sourceName: St
                         Checkbox(
                             checked = todo.completed, onCheckedChange = {
                                 Log.i("todoCheck", "SuccessUI: onChecked")
-                            }, enabled = false, //todo: disable if remote list,
+                            }, enabled = false,
                             colors = CheckboxDefaults.colors(
                                 uncheckedColor = PrimaryColor,
                                 checkedColor = PrimaryColor,

@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.compose_list_me_app.R
 import com.example.compose_list_me_app.common.composables.ElevatedCard
 import com.example.compose_list_me_app.common.composables.ErrorText
@@ -43,7 +44,7 @@ import java.util.Locale
 @Composable
 fun PostListScreen(
     modifier: Modifier = Modifier,
-    viewModel: PostViewModel,
+    viewModel: PostViewModel = viewModel(factory = PostViewModel.Factory),
     navigateCommentsScreen: (Int) -> Unit,
 
     ) {
@@ -82,13 +83,14 @@ fun PostListScreen(
 
 @Composable
 fun PostTile(
-    modifier: Modifier = Modifier,
     post: Post,
     index: Int,
     onTap: (Int) -> Unit,
     bgColor: Color = Color.White
 ) {
-    ElevatedCard(onTap = { onTap(post.id) }) {
+    ElevatedCard(onTap = {
+        onTap(post.id)
+    }) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()

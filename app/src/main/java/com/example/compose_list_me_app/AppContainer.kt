@@ -28,7 +28,7 @@ interface AppContainer {
 class DefaultAppContainer(context: Context) : AppContainer {
 
     companion object {
-        private const val BASEURL = "https://jsonplaceholder.typicode.com/"
+        private const val BASEURL = "https://jsonplaceholder.typicode.com"
     }
 
     private val retrofit =
@@ -58,7 +58,7 @@ class DefaultAppContainer(context: Context) : AppContainer {
 
 
     override val userRepository: UserRepository by lazy {
-        UserRepositoryImpl(remoteDataSource = retrofitUserDatasource)
+        UserRepositoryImpl(remoteDataSource = retrofitUserDatasource, context)
     }
     override val postRepository: PostRepository by lazy {
         PostRepositoryImpl(postDatasource = retrofitPostDatasource)

@@ -8,12 +8,12 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface UserRemoteDataSource {
-    @GET("users")
+    @GET("/users")
     suspend fun getAllUsers(): Response<List<User>>
 
-    @GET("users/{userId}/albums")
+    @GET("/users/{userId}/albums")
     suspend fun getUserAlbums(@Path("userId") userId: Int): Response<List<Album>>
 
-    @GET("albums/{albumId}/photos")
+    @GET("/albums/{albumId}/photos")
     suspend fun getAlbumPhotos(@Path("albumId") albumId: Int): Response<List<Photo>>
 }

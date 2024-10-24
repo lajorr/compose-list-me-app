@@ -6,10 +6,10 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface PostDatasource {
-    @GET("posts")
+    @GET("/posts")
     suspend fun getAllPosts(): Response<List<Post>>
 
-    @GET("users/{userId}/posts")
+    @GET("/users/{userId}/posts")
     suspend fun getUserPosts(@Path("userId") userId: Int): Response<List<Post>>
 
 }

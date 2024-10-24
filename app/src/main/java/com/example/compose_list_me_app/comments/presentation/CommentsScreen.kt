@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.compose_list_me_app.comments.domain.models.Comment
 import com.example.compose_list_me_app.common.composables.ErrorText
 import com.example.compose_list_me_app.common.composables.MyAppBar
@@ -52,7 +53,7 @@ data class CommentsScreenObject(val postId: Int)
 @Composable
 fun CommentsScreen(
     onPop: () -> Unit,
-    commentsViewModel: CommentsViewModel,
+    commentsViewModel: CommentsViewModel = viewModel(factory = CommentsViewModel.Factory),
     post: Post
 
 ) {

@@ -37,7 +37,9 @@ sealed interface PhotoUiState {
 data class UserDetailsState(val user: User?)
 
 
-class UsersViewModel(private val userRepository: UserRepository) : ViewModel() {
+class UsersViewModel(
+    private val userRepository: UserRepository,
+) : ViewModel() {
 
     var searchText by mutableStateOf("")
         private set
@@ -60,10 +62,12 @@ class UsersViewModel(private val userRepository: UserRepository) : ViewModel() {
                 val data = userRepository.fetchAllUsers()
                 _userList = data
                 userListState = UserUiState.Success(data)
+
             } catch (e: Exception) {
                 userListState = UserUiState.Error(message = "Failed to fetch data")
             }
         }
+
     }
 
     fun clearSearchText() {
@@ -134,7 +138,9 @@ class UsersViewModel(private val userRepository: UserRepository) : ViewModel() {
         val Factory = viewModelFactory {
             initializer {
                 val application = this[APPLICATION_KEY] as ListMeApplication
-                UsersViewModel(userRepository = application.container.userRepository)
+                UsersViewModel(
+                    userRepository = application.container.userRepository,
+                )
             }
         }
     }
